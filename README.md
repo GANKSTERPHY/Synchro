@@ -54,7 +54,6 @@ Synchro จะมาแก้ปัญหา ปัญหาสมาธิส�
 | 67070137 | นายภูริ ประชาสุขสิน  (ภูริ)          | Physical Volume Administration | <img alt="Best" height="150" src="" width="150"/>    |
 | 67070069 | นายธนัทภัทร พรหมทอง (ตะวัน)        | Volume Group Administration    | <img alt="Jai" height="150" src="" width="150"/>     |
 
-[//]: # (![GroupMembers]&#40;/assets/img/members/group-members.jpeg&#41;)
 
 ## นำเสนอ
 
