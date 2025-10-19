@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Synchrom Project – Landing</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/stylesheet.css" />
+</head>
+<body>
+  <!-- ===== Header / Nav ===== -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="#home" class="brand">
+        <span class="note">🎵</span>
+        Synchrom
+      </a>
+
+      <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav" id="navbar">
+        <ul>
+            <li><a href="#home" data-target="home" class="nav-link active">Home</a></li>
+            <li><a href="arduinoplay.html">Play</a></li>
+            <li><a href="#dashboard" data-target="dashboard" class="nav-link">Music</a></li>
+            <li><a href="#documentation" data-target="documentation" class="nav-link">Documentation</a></li>
+            <li><a href="#member" data-target="member" class="nav-link">Member</a></li>
+        </ul>
+        </nav>
+    </div>
+  </header>
+
+  <!-- ===== Hero / Home (Arcade Style) ===== -->
+  <section id="home" class="hero-arcade">
+    <div class="container">
+      <div class="hero-grid">
+        <figure class="preview-card" aria-label="project preview">
+          <div class="media"></div>
+        </figure>
+
+        <div class="hero-copy">
+          <h1 class="big-title">
+            <span>Rythm</span>
+            <span>something</span>
+          </h1>
+
+          <p class="lead-th">
+            วิธีแสดงความรักคุณพพครึ่ง…<br/>
+            ผมไม่น่าจะให้คุณจนต้องทำร้ายกัน ต้องทำร้ายคนเท่าไรถึงพอ
+            เวลาที่เห็นข้อความของคุณขึ้นจอ มันทำให้ผมรู้สึกแย่ ที่จริงคุณเป็นใครกันแน่เราไม่ได้เป็นดั่งวันแรก
+          </p>
+
+          <a href="arduinoplay.html" class="btn-start">Start</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Music (Music Grid Dashboard) ===== -->
+  <section id="dashboard" class="section dashboard-music">
+    <div class="container">
+      <div class="dash-head">
+        <h2 class="section-title">ALL Music</h2>
+        <a class="btn-new" href="#" aria-label="Add new song"><span>＋</span> New Song</a>
+      </div>
+
+      <div class="music-grid">
+        <article class="track-card">
+          <div class="disc"></div>
+          <div class="meta">
+            <div class="stars" aria-label="rating"><span class="full">★</span><span class="full">★</span><span class="full">★</span><span>☆</span><span>☆</span></div>
+            <h3 class="title">Title</h3><p class="artist">artist</p>
+            <div class="progress"><div class="bar"></div><span class="time">1:21</span></div>
+            <div class="controls"><button class="btn-ctrl" data-act="prev" aria-label="Previous">◄◄</button><button class="btn-ctrl btn-play" aria-label="Play/Pause">▶</button><button class="btn-ctrl" data-act="next" aria-label="Next">►►</button></div>
+          </div>
+        </article>
+
+        <article class="track-card">
+          <div class="disc"></div>
+          <div class="meta">
+            <div class="stars"><span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="full">★</span><span>★</span></div>
+            <h3 class="title">Title</h3><p class="artist">artist</p>
+            <div class="progress"><div class="bar" style="width:35%"></div><span class="time">1:27</span></div>
+            <div class="controls"><button class="btn-ctrl" data-act="prev">◄◄</button><button class="btn-ctrl btn-play">▶</button><button class="btn-ctrl" data-act="next">►►</button></div>
+          </div>
+        </article>
+
+        <article class="track-card">
+          <div class="disc"></div>
+          <div class="meta">
+            <div class="stars"><span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="full">★</span><span>☆</span></div>
+            <h3 class="title">Title</h3><p class="artist">artist</p>
+            <div class="progress"><div class="bar" style="width:15%"></div><span class="time">1:21</span></div>
+            <div class="controls"><button class="btn-ctrl" data-act="prev">◄◄</button><button class="btn-ctrl btn-play">▶</button><button class="btn-ctrl" data-act="next">►►</button></div>
+          </div>
+        </article>
+
+        <article class="track-card">
+          <div class="disc"></div>
+          <div class="meta">
+            <div class="stars"><span class="full">★</span><span class="full">★</span><span class="full">★</span><span>☆</span><span>☆</span></div>
+            <h3 class="title">Title</h3><p class="artist">artist</p>
+            <div class="progress"><div class="bar" style="width:55%"></div><span class="time">1:27</span></div>
+            <div class="controls"><button class="btn-ctrl" data-act="prev">◄◄</button><button class="btn-ctrl btn-play">▶</button><button class="btn-ctrl" data-act="next">►►</button></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Documentation ===== -->
+  <section id="documentation" class="section alt">
+    <div class="container">
+      <h2 class="section-title">Documentation</h2>
+
+      <p class="doc-lead">
+        “บกพร่อง” ไม่ใช่สิ่งผิดปกติที่ต้องซ่อน แต่เป็นพื้นที่ให้ทักษะใหม่ได้เกิดและเติบโต…
+      </p>
+
+      <h3 class="block-title">Hardware Used</h3>
+      <div class="swatch-row">
+        <div class="swatch"><div class="chip" style="--c:#76a8fa;"></div><div class="swatch-meta"><strong>Shushiro aholic</strong><span>ปั๊มน้ำ • เซนเซอร์ • ใบพัด</span></div></div>
+        <div class="swatch"><div class="chip" style="--c:#7a63a7;"></div><div class="swatch-meta"><strong>Shushiro aholic</strong><span>กล่องบอร์ด • คอนเนคเตอร์</span></div></div>
+        <div class="swatch"><div class="chip" style="--c:#e07ad3;"></div><div class="swatch-meta"><strong>Shushiro aholic</strong><span>หลอดไฟสถานะ • ปุ่ม</span></div></div>
+        <div class="swatch"><div class="chip" style="--c:#d85b55;"></div><div class="swatch-meta"><strong>Shushiro aholic</strong><span>สายไฟ • ท่อ • ข้อต่อ</span></div></div>
+      </div>
+
+      <h3 class="block-title">What makes this Synchrom special?</h3>
+      <p class="muted">ระบบถูกออกแบบให้ใช้งานง่าย รวดเร็ว และปรับแต่งได้จริงในสนาม ด้วยชิ้นส่วนราคาเข้าถึงได้ พร้อมโค้ดเปิดเผยบางส่วนเพื่อการเรียนรู้</p>
+
+      <div class="cta-row">
+        <a class="cta glass large" href="#" aria-disabled="true">Source Code</a>
+        <a class="cta glass large" href="#" aria-disabled="true"><span class="play">▶</span> Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Member / Our Team ===== -->
+  <section id="member" class="section">
+    <div class="container">
+      <h2 class="section-title">Our Team</h2>
+
+      <div class="team-grid">
+        <article class="teammate"><div class="avatar" style="--a:#7fb0ff;"></div><h3 class="member-name">นายโคตรโหด ขี้เป็ด</h3><p class="member-id">67070341</p></article>
+        <article class="teammate"><div class="avatar" style="--a:#5869d8;"></div><h3 class="member-name">นายโคตรโหด ขี้เป็ด</h3><p class="member-id">67070341</p></article>
+        <article class="teammate"><div class="avatar" style="--a:#c945c9;"></div><h3 class="member-name">นายโคตรโหด ขี้เป็ด</h3><p class="member-id">67070341</p></article>
+        <article class="teammate"><div class="avatar" style="--a:#21115d;"></div><h3 class="member-name">นายโคตรโหด ขี้เป็ด</h3><p class="member-id">67070341</p></article>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 Synchrom Project — Made for demo</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Play | Synchrom Project</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/stylesheet.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="index.html#home" class="brand"><span class="note">🎵</span> Synchrom</a>
+      <button class="hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="nav" id="navbar">
+        <ul>
+            <!-- กลับหน้าแรก -->
+            <li><a href="index.html#home">Home</a></li>
+
+            <!-- เลื่อนในหน้า arduinoplay เอง -->
+            <li><a href="#result" data-target="result" class="nav-link">Result</a></li>
+
+            <!-- ไปแท็บเอกสารที่หน้าแรก -->
+            <li><a href="index.html#documentation">Documentation</a></li>
+        </ul>
+        </nav>
+    </div>
+  </header>
+
+  <section class="play-hero">
+    <div class="container play-inner">
+      <a class="play-button-3d" href="#" aria-disabled="true">Connect to Arduino</a>
+    </div>
+  </section>
+
+  <!-- ===== Game Result (ภายใน arduinoplay เท่านั้น) ===== -->
+<section id="result" class="section game-result">
+  <div class="container gr-wrap">
+    <h2 class="section-title">Game Result</h2>
+
+    <div class="gr-left">
+      <p class="gr-label">score</p>
+      <p class="gr-score">98%</p>
+      <button class="gr-badge" type="button">Great !</button>
+
+      <div class="gr-stats">
+        <div><strong>Miss</strong><span>0</span></div>
+        <div><strong>Okay</strong><span>2</span></div>
+        <div><strong>Great</strong><span>283</span></div>
+        <div><strong>Perfect</strong><span>127</span></div>
+      </div>
+
+      <!-- แทร็คตัวอย่างเล็ก ๆ -->
+      <div class="gr-track">
+        <div class="gr-track-icon">⟳</div>
+        <div class="gr-track-body">
+          <div class="gr-title">Title <span class="stars">★ ★ ★ ★ ☆</span></div>
+          <div class="gr-artist">artist</div>
+          <div class="gr-bar"><span style="width:35%"></span></div>
+          <div class="gr-ctrls">
+            <button>◄◄</button><button class="btn-play">▶</button><button>►►</button>
+          </div>
+        </div>
+        <div class="gr-track-menu">≡</div>
+      </div>
+    </div>
+
+    <aside class="gr-right">
+      <h3 class="gr-subtitle">score history</h3>
+      <div class="gr-box placeholder"></div>
+    </aside>
+  </div>
+</section>
+  <script src="assets/app.js"></script>
+</body>
+</html>
