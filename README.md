@@ -40,12 +40,11 @@ Synchro จะมาแก้ปัญหา ปัญหาสมาธิส�
     ตัวต้านทาน 220–330Ω
     Powerbank
 ## Libraries. Sensor, Modules
-1. **Libraries :** 
-    WiFiS3
-    WebServer หรือ ArduinoHttpServer
-    DFRobotDFPlayerMini
-    Bounce2
-    Wire + LiquidCrystal_I2C
+1. WiFiS3
+2. WebServer หรือ ArduinoHttpServer
+3. DFRobotDFPlayerMini
+4. Bounce2
+5. Wire + LiquidCrystal_I2C
 
 ## การทำงาน / วิธีเล่น :
 
