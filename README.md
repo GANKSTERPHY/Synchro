@@ -27,18 +27,18 @@ Synchro จะมาแก้ปัญหา ปัญหาสมาธิส�
 
 ## Hardware
 1. **Sensors & Actuators:** 
-    Push Buttons 4 ตัว 
-    LCD 16x2 หรือ 20x4 I2C
+    1. Push Buttons 4 ตัว 
+    2. LCD 16x2 หรือ 20x4 I2C
 2. **Modules:** 
-    Arduino UNO R4 WiFi
-    DFPlayer Mini + microSD (FAT32)
-    ลำโพง 3W 4–8Ω
+    1. Arduino UNO R4 WiFi
+    2. DFPlayer Mini + microSD (FAT32)
+    3. ลำโพง 3W 4–8Ω
 3. **Tools:**  
-    Arduino IDE
-    สาย USB-C
-    Breadboard / Jumper wires
-    ตัวต้านทาน 220–330Ω
-    Powerbank
+    1. Arduino IDE
+    2. สาย USB-C
+    3. Breadboard / Jumper wires
+    4. ตัวต้านทาน 220–330Ω
+    5. Powerbank
 ## Libraries. Sensor, Modules
 1. WiFiS3
 2. WebServer หรือ ArduinoHttpServer
