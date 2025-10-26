@@ -1,0 +1,337 @@
+/* ✅ ฟอนต์ Nico Moji */
+@font-face {
+  font-family: "Nico Moji";
+  src: url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.eot");
+  src: url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.eot?#iefix") format("embedded-opentype"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.woff") format("woff"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.ttf") format("truetype"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.svg#Nico Moji") format("svg");
+}
+
+/* ====== GLOBAL ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Orbitron", sans-serif;
+}
+.normal-text{
+  font-family: 'Noto Sans Thai', sans-serif;;
+}
+body {
+    color: white;
+    background-size: cover;
+    background-position: center;
+    font-family: 'Noto Sans Thai', sans-serif;;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 🔹 แอนิเมชันสั่น (Shake Effect) */
+#toggleCode:hover::before,
+#toggleCode:hover::after {
+  animation-play-state:running
+}
+/* 🔹 โลโก้มุมซ้ายบน */
+.logo {
+  position: fixed;         /* ให้โลโก้อยู่กับที่ */
+  top: -1.1vh;               /* ระยะห่างจากขอบบน */
+  left: 1vw;              /* ระยะห่างจากขอบซ้าย */
+  z-index: 1001;           /* ให้อยู่เหนือพื้นหลังและ Navbar */
+}
+
+.logo img {
+  width: 140px;             /* ขนาดโลโก้ (ปรับได้) */
+  height: auto;
+  border-radius: 15px;      /* มุมมน */
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+
+/* 🔹 เอฟเฟกต์เวลา hover โลโก้ */
+.logo img:hover {
+  transform: scale(1.1);
+  filter:
+    drop-shadow(0 0 5px #ff00ff)
+    drop-shadow(0 0 10px #cc00ff)
+    drop-shadow(0 0 15px #8000ff)
+    drop-shadow(0 0 20px #00ffff);
+  animation: shake 0.4s ease-in-out 1;
+}
+/* 🔹 แอนิเมชันสั่น (Shake Effect) */
+@keyframes shake {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+  20% { transform: translate(-2px, -2px) rotate(-2deg) scale(1.1); }
+  40% { transform: translate(2px, 2px) rotate(2deg) scale(1.1); }
+  60% { transform: translate(-2px, 2px) rotate(-1deg) scale(1.1); }
+  80% { transform: translate(2px, -2px) rotate(1deg) scale(1.1); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+}
+
+/* ====== Navbar ====== */
+.navbar {
+    position: absolute;
+    top: 4vh;
+    right: 50px;
+    background: linear-gradient(90deg, #2b0068, #6b00a8);
+    padding: 15px 50px;
+    border-radius: 50px;
+    display: flex;
+    gap: 40px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.navbar :hover {
+    transition: 0.3s;
+    transform: scale(1.1);
+}
+
+/* ====== HOME PAGE ====== */
+.home-page {
+    background-image: url('/SynchroWebpage/assets/Img/Arcade.jpg');
+}
+
+.hero {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100vh;
+    padding-right: 1%;
+}
+
+.text-box {
+    max-width: 500px;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 20px;
+    padding: 40px;
+    transform: translateX(-40%);
+}
+
+.text-box h1 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.text-box p {
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background: linear-gradient(90deg, #5a00ff, #a800ff);
+    padding: 12px 30px;
+    border: none;
+    color: white;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #a800ff;
+}
+
+/* ====== DASHBOARD PAGE ====== */
+.dashboard-page {
+  background-image: url('/SynchroWebpage/assets/Img/disco.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ปุ่ม + New Song */
+.add-btn {
+  position: absolute;
+  top: 110px;
+  right: 80px;
+  padding: 12px 35px;
+  border: none;
+  background: linear-gradient(90deg, #5a00ff, #a800ff);
+  border-radius: 30px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+}
+
+/* ===== SONG GRID (ไม่ responsive) ===== */
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 520px);
+  gap: 60px 80px;
+  justify-content: center;
+  padding: 160px 0;
+  margin-top: 25px;
+}
+
+/* ===== SONG CARD ===== */
+.song-card {
+  width: 520px;
+  height: 230px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+  transition: 0.3s ease;
+}
+
+.song-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 30px #a800ff;
+}
+
+/* ===== DISC (ไวนิล) ===== */
+.disc {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background-image: url('/SynchroWebpage/assets/Img/cd.png');
+  background-size: cover;
+  background-position: center;
+  margin-right: 35px;
+  transition: transform 1.5s linear;
+}
+
+/* 🔹 Navbar (ของเดิมคุณ) */
+nav {
+  position: fixed;
+  top: 4vh;
+  right: 40px;
+  background: linear-gradient(120deg, #1D0225, #260B69, #C231CA);
+  border-radius: 100px;
+  padding: 12px 40px;
+  z-index: 1000;
+  box-shadow: 0 10px 10px #0000004f;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  margin: 2px;
+  padding: 0;
+}
+nav li { position: relative; }
+nav a {
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  padding: 10px 18px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+nav a:hover {
+  transform: scale(1.15);
+  background: linear-gradient(90deg, #b310ff, #ff66cc, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.719);
+}
+
+.song-card:hover .disc {
+  transform: rotate(360deg);
+}
+
+/* ===== SONG INFO ===== */
+.song-info {
+  flex: 1;
+}
+
+.song-info h3 {
+  font-size: 1.4rem;
+  margin: 5px 0;
+}
+
+.song-info p {
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.stars {
+  color: gold;
+  font-size: 1.2rem;
+}
+
+/* ===== PROGRESS BAR + TIME ===== */
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 80%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #5a00ff, #a800ff);
+  width: 50%;
+}
+
+.time {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+/* ===== CONTROLS ===== */
+.controls {
+  display: flex;
+  gap: 15px;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s ease;
+}
+
+.ctrl-btn img {
+  width: 22px;
+  height: 22px;
+  filter: invert(1);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.ctrl-btn:hover {
+  background: linear-gradient(90deg, #7b45cc, #ac3fbd);
+  transform: scale(1.15);
+}
+
+.ctrl-btn:hover img {
+  transform: scale(1.2);
+  filter: invert(1) drop-shadow(0 0 8px #ff00ff);
+}

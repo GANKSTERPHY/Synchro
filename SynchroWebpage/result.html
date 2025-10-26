@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Result | Synchrom</title>
+
+  <!-- ✅ ฟอนต์ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet">
+
+  <!-- ✅ CSS -->
+  <link rel="stylesheet" href="result.css">
+</head>
+
+<body>
+  <!-- ✅ โลโก้มุมซ้ายบน -->
+  <!-- โลโก้มุมซ้าย -->
+<div class="logo">
+  <a href="index.html">
+    <img src="/SynchroWebpage/assets/Img/logo.svg" alt="Website Logo">
+  </a>
+</div>
+
+  <!-- ✅ Navbar -->
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="result.html">Result</a></li>
+      <li><a href="documentation.html">Documentation</a></li>
+      <li><a href="documentation.html#ourteam">Member</a></li>
+  </nav>
+
+  <!-- ✅ ส่วนเนื้อหา Game Result -->
+  <div class="content fade-up">
+    <h1 class="title fade-up">Game Result</h1>
+
+    <div class="score-section fade-up">
+      <p class="score-label">score</p>
+      <h2 class="score-value">98%</h2>
+      <div class="grade-btn">Great !</div>
+    </div>
+
+    <div class="detail-section fade-up">
+      <div class="stat">Miss<br><span>0</span></div>
+      <div class="stat">Okay<br><span>2</span></div>
+      <div class="stat">Great<br><span>283</span></div>
+      <div class="stat">Perfect<br><span>127</span></div>
+    </div>
+
+    <!-- ✅ กล่องล่าง -->
+    <div class="bottom-container fade-up">
+
+      <!-- 🔹 Side Box -->
+      <div class="side-box fade-up">
+        <div class="circle top-circle">
+          <img src="/SynchroWebpage/assets/Img/align-justify.svg" alt="icon-top">
+        </div>
+        <div class="circle bottom-circle">
+          <img src="/SynchroWebpage/assets/Img/refresh.svg" alt="icon-bottom">
+        </div>
+      </div>
+
+      <!-- 🔹 Bottom Box -->
+      <div class="bottom-box fade-up">
+        <div class="bottom-box-top">
+          <div class="song-info">
+            <p class="song-title">Title Song</p>
+            <p class="song-artist">Enhypen</p>
+          </div>
+
+          <!-- ✅ ดาว -->
+          <div class="song-stars">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
+          </div>
+        </div>
+
+        <!-- ✅ แถบ progress -->
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+
+        <!-- ✅ ปุ่มควบคุมเพลง -->
+        <div class="music-controls">
+          <img src="/SynchroWebpage/assets/Img/angle-left.svg" alt="previous" class="control-btn">
+          <img src="/SynchroWebpage/assets/Img/play.svg" alt="pause" class="control-btn">
+          <img src="/SynchroWebpage/assets/Img/angle-right.svg" alt="next" class="control-btn">
+        </div>
+      </div>
+
+<!-- 🔹 Score History -->
+<div class="score-history fade-up">
+  <h3>score history</h3>
+
+  <!-- 🔸 กล่องย่อยแต่ละเพลง -->
+  <div class="history-item">
+    <div class="song-info">
+      <p class="song-title">Drunk-Dazed</p>
+      <p class="song-artist">Enhypen</p>
+    </div>
+    <p class="song-grade">Great</p>
+  </div>
+
+  <div class="history-item">
+    <div class="song-info">
+      <p class="song-title">FEVER</p>
+      <p class="song-artist">Enhypen</p>
+    </div>
+    <p class="song-grade">Perfect</p>
+  </div>
+
+  <div class="history-item">
+    <div class="song-info">
+      <p class="song-title">Polaroid Love</p>
+      <p class="song-artist">Enhypen</p>
+    </div>
+    <p class="song-grade">Great</p>
+  </div>
+
+  <div class="history-item">
+    <div class="song-info">
+      <p class="song-title">Sweet Venom</p>
+      <p class="song-artist">Enhypen</p>
+    </div>
+    <p class="song-grade">Great</p>
+  </div>
+</div>
+
+
+
+  <!-- ✅ Script สำหรับ fade-up effect -->
+  <script>
+    const faders = document.querySelectorAll('.fade-up');
+
+    const appearOptions = {
+      threshold: 0.15,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('show');
+        observer.unobserve(entry.target);
+      });
+    }, appearOptions);
+
+    faders.forEach(fader => {
+      appearOnScroll.observe(fader);
+    });
+  </script>
+</body>
+</html>
+

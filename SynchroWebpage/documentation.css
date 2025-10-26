@@ -1,0 +1,442 @@
+/* 🔹 พื้นหลังของหน้า */
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: radial-gradient(circle at top right, #260B68, transparent 50%),
+              radial-gradient(circle at bottom left, #c231c9, transparent 60%),
+              #000;
+  color: white;
+  min-height: 200vh;
+  padding-bottom: 200px; /* ✅ เพิ่มพื้นที่ล่างสุด */
+}
+
+
+
+/* ฟอนต์ */
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 100px;
+}
+h3 {
+  font-family: 'Orbitron', sans-serif;
+}
+p {
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+
+/* 🔹 Navbar */
+/* 🔹 Navbar แบบกล่องลอยมีขอบมน */
+nav {
+  position: fixed;
+  top: 4vh; /* ระยะห่างจากขอบบน */
+  right: 40px;
+  background: linear-gradient(120deg, #1D0225, #260B69, #C231CA);
+  border-radius: 100px;
+  padding:12px 40px;
+  z-index: 1000;
+  box-shadow: 0 10px 10px#0000004f;
+
+}
+
+
+/* จัดเรียงเมนู */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  margin: 2px;
+  padding: 0;
+}
+
+nav li {
+  position: relative;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* เอฟเฟกต์ตอน hover */
+nav li:hover {
+  transform: scale(1.15);
+  background: linear-gradient(90deg, #b310ff, #ff66cc, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.719);
+}
+
+.hardware-used {
+  padding: 10px 50px 30px !important;
+}
+
+.Documentation {
+  font-family: 'Orbitron', sans-serif;
+  padding-top: 120px !important;
+  font-size: 100px;
+}
+
+/* 🔹 จัด Our Team ให้อยู่ตรงกลางและดูเรียบร้อย */
+.member {
+  text-align: center;
+  padding: 100px 0 40px; /* ระยะห่างด้านบน-ล่าง */
+}
+.member h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 60px;
+  margin: 0;
+}
+
+/* 🔹 ปรับ card-section ใต้ Our Team ให้รูปวงกลม */
+.member + .card-section {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 20px 50px;
+}
+
+/* 🔹 กล่องของแต่ละสมาชิก */
+.member + .card-section .card {
+  background: white;
+  color: black;
+  border-radius: 20px;
+  padding: 20px;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* 🔹 รูปโปรไฟล์วงกลม */
+.member + .card-section .card img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* วงกลม */
+  object-fit: cover;
+  margin-bottom: 10px;
+  transition: transform 0.4s ease;
+}
+
+/* เอฟเฟกต์ hover */
+.member + .card-section .card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(255,255,255,0.4);
+}
+.member + .card-section .card:hover img {
+  transform: scale(1.05);
+}
+
+/* 🔹 ส่วนเนื้อหา */
+.content {
+  padding: 80px 50px 30px;
+  max-width: 1000px;
+}
+.content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+.content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* 🔹 กล่องข้อมูล */
+.card-section {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px 60px;
+}
+
+.card {
+  background: white;
+  color: black;
+  border-radius: 20px;
+  padding: 15px;
+  width: 150px;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s ease;
+  will-change: transform;
+}
+
+/* ✅ ขยายทั้งกล่อง */
+.card:hover {
+  transform: scale(1.12) translateY(-6px);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.4),
+              0 0 35px rgba(255, 0, 179, 0.4);
+}
+
+/* ให้รูปขยายตามด้วยเล็กน้อย */
+.card img {
+  width: 150px;
+  height: 150px;
+  border-radius: 15%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.card:hover img {
+  transform: scale(1.05);
+}
+
+/* 🔹 ข้อความในกล่อง */
+.card h3 {
+  margin: 5px 0 2px;
+  font-size: 1.2rem;
+  font-family: 'Orbitron', sans-serif;
+}
+.card p {
+  margin: 0 0 10px;
+  color: #555;
+  font-family: 'Noto Sans Thai', sans-serif;
+  padding: 0 8px;
+}
+
+/* 🔹 Responsive */
+@media (max-width: 900px) {
+  .card { width: calc(50% - 20px); }
+}
+@media (max-width: 600px) {
+  .card { width: 100%; }
+}
+
+/* ===========================
+   🔥 Scroll Reveal Animation
+   =========================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🔹 ส่วนท้าย Code & Learn More */
+.bottom-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 60px 80px;
+  gap: 40px;
+}
+
+/* ซ้าย */
+.left-panel {
+  flex: 1;
+}
+.left-panel h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+/* กล่องโค้ด */
+.code-box {
+  background: #111;
+  color: #ff00f7;
+  font-family: 'Courier New', monospace;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  height: 300px;
+  overflow: hidden;
+  transition: height 0.6s ease;
+}
+.code-box.expanded {
+  height: 600px;
+  overflow-y: scroll;
+}
+
+/* ปุ่ม */
+#toggleCode {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 100px;
+  background: linear-gradient(120deg, #1D0225, #260B69, #C231CA);
+  box-shadow: 0 5px 10px#0000004a;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#toggleCode:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+/* ขวา */
+.right-panel {
+  flex: 1;
+  text-align: left;
+}
+.right-panel h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+/* คลิป YouTube */
+.video-container iframe {
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .bottom-section {
+    flex-direction: column;
+    align-items: center;
+  }
+  .left-panel, .right-panel {
+    width: 100%;
+  }
+}
+
+/* ✅ กล่องทั้งหมด (รวม Hardware Used ด้วย) ให้ขยายเหมือน Our Team */
+.card-section .card {
+  background: white;
+  color: black;
+  border-radius: 20px;
+  padding: 20px;
+  width: 230px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* ✅ เอฟเฟกต์ hover เหมือน Our Team */
+.card-section .card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.4),
+              0 0 25px rgba(255, 0, 255, 0.3);
+}
+
+/* ✅ รูปภาพปกติ (สี่เหลี่ยมมน) สำหรับ Hardware Used */
+.card-section .card img {
+  width: 150px;
+  height: 150px;
+  border-radius: 15%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.card-section .card:hover img {
+  transform: scale(1.05);
+}
+
+/* ✅ เฉพาะ Our Team เท่านั้นที่ให้รูปเป็นวงกลม */
+.member + .card-section .card img {
+  border-radius: 50%;
+}
+
+#toggleCode {
+  position: relative;
+  overflow: hidden;
+}
+
+#toggleCode::before,
+#toggleCode::after {
+  content: "✨";
+  position: absolute;
+  opacity: 0;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+#toggleCode::before {
+  top: 30%;
+  left: 20%;
+  animation: sparkle-multi 1.5s ease-out infinite;
+}
+
+#toggleCode::after {
+  top: 70%;
+  right: 25%;
+  animation: sparkle-multi 1.8s ease-out infinite;
+}
+
+@keyframes sparkle-multi {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+    text-shadow: 0 0 0px white;
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.2) rotate(45deg);
+    text-shadow: 0 0 10px white, 0 0 20px #ff00ff, 0 0 40px cyan;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px) rotate(90deg);
+  }
+}
+
+#toggleCode:hover::before,
+#toggleCode:hover::after {
+  animation-play-state:running
+}
+/* 🔹 โลโก้มุมซ้ายบน */
+.logo {
+  position: fixed;         /* ให้โลโก้อยู่กับที่ */
+  top: -1.1vh;               /* ระยะห่างจากขอบบน */
+  left: 1vw;               /* ระยะห่างจากขอบซ้าย */
+  z-index: 1001;           /* ให้อยู่เหนือพื้นหลังและ Navbar */
+}
+
+.logo img {
+  width: 140px;             /* ขนาดโลโก้ (ปรับได้) */
+  height: auto;
+  border-radius: 15px;      /* มุมมน */
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+
+/* 🔹 เอฟเฟกต์เวลา hover โลโก้ */
+.logo img:hover {
+  transform: scale(1.1);
+  filter:
+    drop-shadow(0 0 5px #ff00ff)
+    drop-shadow(0 0 10px #cc00ff)
+    drop-shadow(0 0 15px #8000ff)
+    drop-shadow(0 0 20px #00ffff);
+  animation: shake 0.4s ease-in-out 1;
+}
+/* 🔹 แอนิเมชันสั่น (Shake Effect) */
+@keyframes shake {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+  20% { transform: translate(-2px, -2px) rotate(-2deg) scale(1.1); }
+  40% { transform: translate(2px, 2px) rotate(2deg) scale(1.1); }
+  60% { transform: translate(-2px, 2px) rotate(-1deg) scale(1.1); }
+  80% { transform: translate(2px, -2px) rotate(1deg) scale(1.1); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+}
+
+nav a {
+  color: white;
+  text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  background: linear-gradient(90deg, #b310ff, #ff66cc, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.719);
+}
+
+html {
+  scroll-behavior: smooth;
+}

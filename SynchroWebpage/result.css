@@ -1,0 +1,486 @@
+/* ✅ ฟอนต์ Nico Moji */
+@font-face {
+  font-family: "Nico Moji";
+  src: url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.eot");
+  src: url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.eot?#iefix") format("embedded-opentype"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.woff") format("woff"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.ttf") format("truetype"),
+       url("https://db.onlinewebfonts.com/t/73c00071d90ecfb78bf0ccdeda529307.svg#Nico Moji") format("svg");
+}
+
+/* 🔹 พื้นหลัง */
+body {
+  margin: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
+  background-image: url("https://i.pinimg.com/1200x/90/91/34/9091347386538756263105465829a77a.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+
+/* 🔹 Navbar (ของเดิมคุณ) */
+nav {
+  position: fixed;
+  top: 4vh;
+  right: 40px;
+  background: linear-gradient(120deg, #1D0225, #260B69, #C231CA);
+  border-radius: 100px;
+  padding: 12px 40px;
+  z-index: 1000;
+  box-shadow: 0 10px 10px #0000004f;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  margin: 2px;
+  padding: 0;
+}
+nav li { position: relative; }
+nav a {
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  padding: 10px 18px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+nav a:hover {
+  transform: scale(1.15);
+  background: linear-gradient(90deg, #b310ff, #ff66cc, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.719);
+}
+
+/* 🔹 เนื้อหา */
+.content {
+  text-align: center;
+  margin-top: 220px;
+  padding-bottom: 70px;   /* ✅ เพิ่มช่องว่างด้านล่าง */
+}
+
+/* 🔹 หัวข้อใหญ่ */
+.title {
+  font-family: "Nico Moji", sans-serif;
+  font-size: 60px;
+  letter-spacing: 4px;
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #ff66ff,
+    0 0 30px #00ffff,
+    0 0 40px #ff00ff;
+  animation: glow 1.2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ff00ff, 0 0 15px #ff33cc, 0 0 25px #00ffff; }
+  to   { text-shadow: 0 0 15px #00ffff, 0 0 25px #ff33ff, 0 0 45px #ff00ff; }
+}
+
+/* 🔹 ส่วนคะแนน */
+.score-section {
+  margin-top: 40px;
+}
+.score-label {
+  font-size: 18px;
+  font-family: 'Orbitron', sans-serif;
+  color: #ccc;
+}
+.score-value {
+  font-size: 80px;
+  margin: 5px 0;
+  font-family: 'Orbitron', sans-serif;
+  text-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+}
+/* 🔹 เพิ่มแอนิเมชันสั่นตลอดเวลาให้ปุ่ม Great */
+.grade-btn {
+  display: inline-block;
+  background: linear-gradient(125deg, #260b68, #4c5dd7, #00ffff);
+  color: white;
+  border-radius: 100px;
+  font-family: 'Orbitron', sans-serif;
+  padding: 20px 35px;
+  margin-top: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  box-shadow: 0 0 10px #66aaff;
+  animation: shakeInfinite 1s ease-in-out infinite;
+}
+
+/* 🔹 แอนิเมชันสั่นแบบวนลูปตลอดเวลา */
+@keyframes shakeInfinite {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-2px, -2px) rotate(-2deg); }
+  40% { transform: translate(2px, 2px) rotate(2deg); }
+  60% { transform: translate(-2px, 2px) rotate(-1deg); }
+  80% { transform: translate(2px, -2px) rotate(1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* 🔹 สถิติ */
+.detail-section {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 40px;
+  font-family: 'Orbitron', sans-serif;
+}
+.stat {
+  text-align: center;
+  font-size: 16px;
+  color: #ccc;
+}
+.stat span {
+  display: block;
+  margin-top: 5px;
+  font-size: 20px;
+  color: white;
+}
+
+/* 🔹 แอนิเมชันสั่น (Shake Effect) */
+#toggleCode:hover::before,
+#toggleCode:hover::after {
+  animation-play-state:running
+}
+/* 🔹 โลโก้มุมซ้ายบน */
+.logo {
+  position: fixed;         /* ให้โลโก้อยู่กับที่ */
+  top:-1.1vh;               /* ระยะห่างจากขอบบน */
+  left: 1vw;              /* ระยะห่างจากขอบซ้าย */
+  z-index: 1001;           /* ให้อยู่เหนือพื้นหลังและ Navbar */
+}
+
+.logo img {
+  width: 140px;             /* ขนาดโลโก้ (ปรับได้) */
+  height: auto;
+  border-radius: 15px;      /* มุมมน */
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+
+/* 🔹 เอฟเฟกต์เวลา hover โลโก้ */
+.logo img:hover {
+  transform: scale(1.1);
+  filter:
+    drop-shadow(0 0 5px #ff00ff)
+    drop-shadow(0 0 10px #cc00ff)
+    drop-shadow(0 0 15px #8000ff)
+    drop-shadow(0 0 20px #00ffff);
+  animation: shake 0.4s ease-in-out 1;
+}
+/* 🔹 แอนิเมชันสั่น (Shake Effect) */
+@keyframes shake {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+  20% { transform: translate(-2px, -2px) rotate(-2deg) scale(1.1); }
+  40% { transform: translate(2px, 2px) rotate(2deg) scale(1.1); }
+  60% { transform: translate(-2px, 2px) rotate(-1deg) scale(1.1); }
+  80% { transform: translate(2px, -2px) rotate(1deg) scale(1.1); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
+}
+
+
+
+/* 🔹 กล่องรวมล่าง */
+.bottom-container {
+  display: flex;
+  justify-content: center;   /* จัดตรงกลาง */
+  align-items: flex-start;
+  gap: 25px;
+  margin-top: 60px;
+  flex-wrap: nowrap;         /* ห้ามขึ้นบรรทัดใหม่ */
+  width: 100%;               /* บังคับไม่เกินขอบ */
+  box-sizing: border-box;
+}
+
+/* 🔹 กล่องเพลง */
+.bottom-box {
+  width: 45%;
+  height: 230px;
+  flex: 0 0 55%;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0,255,255,0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 25px 30px;
+  color: #000;
+  animation: fadeIn 1s ease-in-out;
+  transition: transform 0.3s ease;
+}
+.bottom-box:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(0,255,255,0.5);
+}
+
+/* 🔹 ด้านในกล่องเพลง */
+.bottom-box-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.song-info { 
+    text-align: left,
+}
+
+.song-title {
+    font-size: 24px; margin: 0;
+    font-family: 'Orbitron', sans-serif;
+}
+.song-artist {
+    font-size: 16px;
+    margin-top: 5px;
+    color: #555;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* 🔹 ดาว */
+.song-stars {
+  display: flex;
+  gap: 5px;
+}
+.song-stars .star {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 3px 4px #1e1e1e41);
+  transition: transform 0.2s ease;
+}
+
+/* 🔹 แถบเพลง */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.progress-fill {
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  border-radius: 5px;
+}
+
+/* 🔹 ปุ่มควบคุมเพลง */
+.music-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+}
+.control-btn {
+  width: 40px;
+  height: 40px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 5px #00ffff);
+}
+.control-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px #ff00ff);
+}
+
+/* 🔹 Side Box (วงกลม 2 วง) */
+.side-box {
+  width: 10%;             
+  height: 220px;          
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 25px rgba(0,255,255,0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex: 0 0 15% ;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
+  transition: all 0.3s ease;
+}
+.side-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255,0,255,0.6),
+              0 0 50px rgba(0,255,255,0.4);
+}
+
+/* 🔹 วงกลมใน Side Box */
+.circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 0 15px rgba(255,255,255,0.4),
+    0 0 15px rgba(0,255,255,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.circle img {
+  width: 55%;
+  height: 55%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 5px #00ffff);
+}
+.circle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(255,0,255,0.6);
+}
+
+/* 🔹 Score History */
+.score-history {
+  width: 15%;
+  height: 260px; /* ความสูงเริ่มต้น */
+  flex: 0 0 20%;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 25px rgba(0,255,255,0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20px;
+  padding-left: 10px;
+  transition: all 0.3s ease;
+
+  /* ✅ เพิ่มส่วนนี้ให้เลื่อนในกล่องได้ */
+  max-height: 260px;        /* จำกัดความสูงสูงสุด */
+  overflow-y: auto;          /* เปิด scroll ถ้าเนื้อหาเกิน */
+  scrollbar-width: thin;     /* (สำหรับ Firefox) ทำให้ scrollbar เล็ก */
+  scrollbar-color: #00ffff #ffffff00; /* สี scrollbar */
+}
+
+/* ✅ สไตล์ scrollbar (สำหรับ Chrome / Edge / Safari) */
+.score-history::-webkit-scrollbar {
+  width: 8px;
+}
+.score-history::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+.score-history::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #260b68, #C231C9);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,255,255,0.6);
+}
+.score-history::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #260b68, #C231C9);
+}
+
+/* ✅ หัวข้อด้านบน */
+.score-history h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* 🔹 กล่องย่อยภายใน Score History */
+.history-item {
+  width: 85%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 15px;
+  padding: 12px 18px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+/* เอฟเฟกต์เวลา hover */
+.history-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(0,255,255,0.4);
+}
+
+/* 🔹 ข้อมูลเพลงด้านซ้าย */
+.history-item .song-info {
+  text-align: left;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.history-item .song-title {
+  font-size: 16px;
+  color: #000;
+  margin: 0;
+  font-weight: 600;
+}
+
+.history-item .song-artist {
+  font-size: 13px;
+  color: #444;
+  margin-top: 4px;
+}
+
+/* 🔹 ข้อความ Great ด้านขวา */
+.history-item .song-grade {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+  margin: 0;
+  align-self: center;
+  animation: glowText 2s ease-in-out infinite alternate;
+}
+
+/* 🔹 เอฟเฟกต์เรืองแสงของคำว่า Great */
+@keyframes glowText {
+  from {
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff;
+  }
+  to {
+    text-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+  }
+}
+
+
+/* 🔹 แอนิเมชันค่อยๆ ปรากฏ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🔹 เอฟเฟกต์ค่อยๆ โผล่ขึ้นเมื่อเลื่อนถึง */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease-out;
+}
+
+/* 🔹 เมื่อเข้ามาในหน้าจอแล้วจะเฟดขึ้น */
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1000px) {
+  .bottom-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .side-box, .bottom-box, .score-history {
+    width: 80%;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
