@@ -13,8 +13,6 @@
 <!-- Reuse main stylesheet -->
 <link rel="stylesheet" href="style.css">
 
-<link rel="icon" href="assets/icon.png">
-
 <style>
 /* Page-specific styles only */
 #container {
@@ -70,6 +68,37 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* File input styling */
+#leftPanel input[type="file"] {
+  width: 100%;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(194, 49, 201, 0.4);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#leftPanel input[type="file"]:hover {
+  border-color: #C231CA;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#leftPanel input[type="file"]::file-selector-button {
+  background: linear-gradient(120deg, #260B69, #C231CA);
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+}
+
 .typeToggle {
   padding: 10px 20px;
   cursor: pointer;
@@ -118,6 +147,31 @@
   transform: translateY(0);
 }
 
+/* Audio controls */
+.audio-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.audio-controls button {
+  flex: 1;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.time-display {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  color: #00ffff;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
 textarea {
   width: 100%;
   height: 180px;
@@ -144,6 +198,7 @@ textarea:focus {
   display: flex;
   justify-content: center;
   padding: 20px;
+  position: relative;
 }
 
 #gameContainer::-webkit-scrollbar {
@@ -164,6 +219,43 @@ textarea:focus {
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
   width: fit-content;
+  position: relative;
+}
+
+/* Time indicator arrow */
+.time-arrow {
+  position: fixed;
+  top: calc(120px + 61.25vh);
+  left: calc(50% - 10vw);
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 25px solid rgba(255, 0, 255, 0.7);
+  filter: drop-shadow(0 0 10px #ff00ff) drop-shadow(0 0 15px #00ffff);
+  pointer-events: none;
+  z-index: 50;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.7;
+    filter: drop-shadow(0 0 10px #ff00ff) drop-shadow(0 0 15px #00ffff);
+  }
+  50% { 
+    opacity: 1;
+    filter: drop-shadow(0 0 15px #ff00ff) drop-shadow(0 0 25px #00ffff);
+  }
+}
+
+/* Padding at bottom for start of song */
+#gameArea::after {
+  content: '';
+  display: block;
+  height: 20vh;
+  grid-column: 1 / -1;
 }
 
 .tile {
@@ -171,8 +263,8 @@ textarea:focus {
   background: rgba(38, 11, 104, 0.2);
   cursor: pointer;
   transition: all 0.15s ease;
-  width: 80px;
-  height: 35px;
+  width: 8vw;
+  height: 5vh;
   border-radius: 4px;
 }
 
@@ -218,14 +310,14 @@ body {
 <!-- Logo -->
 <div class="logo">
   <a href="index.html">
-    <img src="/SynchroWebpage/assets/Img/logo.svg" alt="Website Logo">
+    <img src="assets/Img/logo.svg" alt="Website Logo">
   </a>
 </div>
 
 <!-- Navbar -->
 <nav>
   <ul>
-    <li><a href="/index.html">Home</a></li>
+    <li><a href="index.html">Home</a></li>
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="result.html">Result</a></li>
     <li><a href="documentation.html">Documentation</a></li>
@@ -236,10 +328,20 @@ body {
 <div id="container">
   <div id="leftPanel">
     <h2>Song Creator</h2>
+    
+    <!-- Audio upload -->
+    <input type="file" id="audioFile" accept="audio/*" />
+    <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+    
     <input type="text" id="songName" placeholder="Song Name" />
     <input type="text" id="artist" placeholder="Artist" />
-    <input type="number" id="length" placeholder="Length (seconds)" />
-    <button onclick="resizeGrid()">Set Length</button>
+    <input type="number" id="length" placeholder="Length (seconds)" readonly />
+    
+    <!-- Audio controls -->
+    <div class="audio-controls">
+      <button onclick="togglePlayPause()" id="playPauseBtn">▶ Play</button>
+      <button onclick="stopAudio()">■ Stop</button>
+    </div>
     
     <div style="display: flex; gap: 10px; margin-top: 10px;">
       <button class="typeToggle active" id="tapBtn" onclick="setTileType('tap')">Tap</button>
@@ -251,13 +353,21 @@ body {
   </div>
 
   <div id="gameContainer">
+    <div class="time-arrow"></div>
     <div id="gameArea"></div>
   </div>
 </div>
 
+<audio id="audioPlayer" style="display: none;"></audio>
+
 <script>
 const gameArea = document.getElementById('gameArea');
 const gameContainer = document.getElementById('gameContainer');
+const audioPlayer = document.getElementById('audioPlayer');
+const audioFileInput = document.getElementById('audioFile');
+const timeDisplay = document.getElementById('timeDisplay');
+const playPauseBtn = document.getElementById('playPauseBtn');
+
 const COLUMNS = 4;
 let ROWS = 100;
 let currentTileType = 'tap';
@@ -267,6 +377,111 @@ let dragColumn = null;
 let dragPreview = null;
 let tilesData = [];
 const timePerTile = 200;
+let isPlaying = false;
+let animationFrameId = null;
+
+// Audio file handling
+audioFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const url = URL.createObjectURL(file);
+    audioPlayer.src = url;
+    
+    // Get duration when loaded
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      const duration = Math.ceil(audioPlayer.duration);
+      document.getElementById('length').value = duration;
+      ROWS = Math.ceil((duration * 1000) / timePerTile);
+      tilesData = [];
+      createGrid();
+      updateTimeDisplay();
+    });
+  }
+});
+
+// Audio time update
+audioPlayer.addEventListener('timeupdate', () => {
+  updateTimeDisplay();
+  if (isPlaying) {
+    syncScrollToAudio();
+  }
+});
+
+audioPlayer.addEventListener('ended', () => {
+  isPlaying = false;
+  playPauseBtn.textContent = '▶ Play';
+});
+
+function updateTimeDisplay() {
+  const current = formatTime(audioPlayer.currentTime);
+  const total = formatTime(audioPlayer.duration || 0);
+  timeDisplay.textContent = `${current} / ${total}`;
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function togglePlayPause() {
+  if (!audioPlayer.src) {
+    alert('Please upload an audio file first!');
+    return;
+  }
+  
+  if (isPlaying) {
+    audioPlayer.pause();
+    playPauseBtn.textContent = '▶ Play';
+  } else {
+    audioPlayer.play();
+    playPauseBtn.textContent = '❚❚ Pause';
+  }
+  isPlaying = !isPlaying;
+}
+
+function stopAudio() {
+  audioPlayer.pause();
+  audioPlayer.currentTime = 0;
+  isPlaying = false;
+  playPauseBtn.textContent = '▶ Play';
+  updateTimeDisplay();
+}
+
+// Sync scroll position to audio time
+function syncScrollToAudio() {
+  const currentTime = audioPlayer.currentTime * 1000; // Convert to ms
+  const totalTime = ROWS * timePerTile;
+  const scrollPercentage = currentTime / totalTime;
+  
+  // Scroll from bottom to top as time progresses
+  const maxScroll = gameContainer.scrollHeight - gameContainer.clientHeight;
+  const targetScroll = maxScroll * (1 - scrollPercentage);
+  
+  gameContainer.scrollTop = targetScroll;
+}
+
+// Update audio time based on scroll position
+let scrollTimeout;
+gameContainer.addEventListener('scroll', () => {
+  if (isPlaying) return; // Don't update if playing
+  
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    const scrollTop = gameContainer.scrollTop;
+    const maxScroll = gameContainer.scrollHeight - gameContainer.clientHeight;
+    const scrollPercentage = scrollTop / maxScroll;
+    
+    // Convert scroll percentage to time (inverted because we scroll from bottom)
+    const totalTime = (ROWS * timePerTile) / 1000; // Convert to seconds
+    const currentTime = totalTime * (1 - scrollPercentage);
+    
+    if (audioPlayer.src && !isNaN(currentTime)) {
+      audioPlayer.currentTime = Math.max(0, Math.min(currentTime, audioPlayer.duration));
+      updateTimeDisplay();
+    }
+  }, 100);
+});
 
 function setTileType(type){
   currentTileType = type;
@@ -398,13 +613,6 @@ function finalizeHold(startRow,endRow,col){
   });
 
   renderTiles();
-}
-
-function resizeGrid(){
-  const songLength=parseFloat(document.getElementById('length').value)||10;
-  ROWS = Math.ceil((songLength*1000)/timePerTile);
-  tilesData=[];
-  createGrid();
 }
 
 function exportJSON(){

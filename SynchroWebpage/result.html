@@ -18,12 +18,11 @@
 
 <body>
   <!-- ✅ โลโก้มุมซ้ายบน -->
-  <!-- โลโก้มุมซ้าย -->
-<div class="logo">
-  <a href="/Synchro/index.html">
-    <img src="assets/Img/logo.svg" alt="Website Logo">
-  </a>
-</div>
+  <div class="logo">
+    <a href="/Synchro/index.html">
+      <img src="assets/Img/logo.svg" alt="Website Logo">
+    </a>
+  </div>
 
   <!-- ✅ Navbar -->
   <nav>
@@ -33,23 +32,24 @@
       <li><a href="result.html">Result</a></li>
       <li><a href="documentation.html">Documentation</a></li>
       <li><a href="documentation.html#ourteam">Member</a></li>
+    </ul>
   </nav>
 
   <!-- ✅ ส่วนเนื้อหา Game Result -->
   <div class="content fade-up">
-    <h1 class="title fade-up">Game Result</h1>
+    <h1 class="title fade-up" id="pageTitle">Game Result</h1>
 
     <div class="score-section fade-up">
       <p class="score-label">score</p>
-      <h2 class="score-value">98%</h2>
-      <div class="grade-btn">Great !</div>
+      <h2 class="score-value" id="scoreValue">0%</h2>
+      <div class="grade-btn" id="gradeBadge">No Data</div>
     </div>
 
     <div class="detail-section fade-up">
-      <div class="stat">Miss<br><span>0</span></div>
-      <div class="stat">Okay<br><span>2</span></div>
-      <div class="stat">Great<br><span>283</span></div>
-      <div class="stat">Perfect<br><span>127</span></div>
+      <div class="stat">Miss<br><span id="missStat">0</span></div>
+      <div class="stat">Okay<br><span id="okayStat">0</span></div>
+      <div class="stat">Great<br><span id="greatStat">0</span></div>
+      <div class="stat">Perfect<br><span id="perfectStat">0</span></div>
     </div>
 
     <!-- ✅ กล่องล่าง -->
@@ -57,10 +57,10 @@
 
       <!-- 🔹 Side Box -->
       <div class="side-box fade-up">
-        <div class="circle top-circle">
+        <div class="circle top-circle" onclick="window.location.href='dashboard.html'">
           <img src="assets/Img/align-justify.svg" alt="icon-top">
         </div>
-        <div class="circle bottom-circle">
+        <div class="circle bottom-circle" onclick="resetGame()">
           <img src="assets/Img/refresh.svg" alt="icon-bottom">
         </div>
       </div>
@@ -69,12 +69,12 @@
       <div class="bottom-box fade-up">
         <div class="bottom-box-top">
           <div class="song-info">
-            <p class="song-title">Title Song</p>
-            <p class="song-artist">Enhypen</p>
+            <p class="song-title" id="nowPlayingTitle">No Song Selected</p>
+            <p class="song-artist" id="nowPlayingArtist">---</p>
           </div>
 
           <!-- ✅ ดาว -->
-          <div class="song-stars">
+          <div class="song-stars" id="songStars">
             <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
             <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
             <img src="https://cdn-icons-png.flaticon.com/512/2107/2107957.png" alt="star" class="star">
@@ -85,78 +85,29 @@
 
         <!-- ✅ แถบ progress -->
         <div class="progress-bar">
-          <div class="progress-fill"></div>
+          <div class="progress-fill" id="progressFill"></div>
         </div>
 
         <!-- ✅ ปุ่มควบคุมเพลง -->
         <div class="music-controls">
-          <img src="assets/Img/angle-left.svg" alt="previous" class="control-btn">
-          <img src="assets/Img/play.svg" alt="pause" class="control-btn">
-          <img src="assets/Img/angle-right.svg" alt="next" class="control-btn">
+          <img src="assets/Img/angle-left.svg" alt="previous" class="control-btn" onclick="previousSong()">
+          <img src="assets/Img/play.svg" alt="pause" class="control-btn" id="playBtn" onclick="togglePlay()">
+          <img src="assets/Img/angle-right.svg" alt="next" class="control-btn" onclick="nextSong()">
         </div>
       </div>
 
-<!-- 🔹 Score History -->
-<div class="score-history fade-up">
-  <h3>score history</h3>
+      <!-- 🔹 Score History -->
+      <div class="score-history fade-up">
+        <h3>score history</h3>
 
-  <!-- 🔸 กล่องย่อยแต่ละเพลง -->
-  <div class="history-item">
-    <div class="song-info">
-      <p class="song-title">Drunk-Dazed</p>
-      <p class="song-artist">Enhypen</p>
+        <!-- 🔸 กล่องย่อยแต่ละเพลง -->
+        <div id="historyList">
+          <p style="color: #666; text-align: center; padding: 20px; font-size: 14px;">No history yet</p>
+        </div>
+      </div>
+
     </div>
-    <p class="song-grade">Great</p>
   </div>
-
-  <div class="history-item">
-    <div class="song-info">
-      <p class="song-title">FEVER</p>
-      <p class="song-artist">Enhypen</p>
-    </div>
-    <p class="song-grade">Perfect</p>
-  </div>
-
-  <div class="history-item">
-    <div class="song-info">
-      <p class="song-title">Polaroid Love</p>
-      <p class="song-artist">Enhypen</p>
-    </div>
-    <p class="song-grade">Great</p>
-  </div>
-
-  <div class="history-item">
-    <div class="song-info">
-      <p class="song-title">Sweet Venom</p>
-      <p class="song-artist">Enhypen</p>
-    </div>
-    <p class="song-grade">Great</p>
-  </div>
-</div>
-
-
-
-  <!-- ✅ Script สำหรับ fade-up effect -->
-  <script>
-    const faders = document.querySelectorAll('.fade-up');
-
-    const appearOptions = {
-      threshold: 0.15,
-      rootMargin: "0px 0px -50px 0px"
-    };
-
-    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('show');
-        observer.unobserve(entry.target);
-      });
-    }, appearOptions);
-
-    faders.forEach(fader => {
-      appearOnScroll.observe(fader);
-    });
-  </script>
+  <script src="result.js"></script>
 </body>
 </html>
-
