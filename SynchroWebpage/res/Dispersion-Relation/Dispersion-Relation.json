@@ -1,0 +1,9 @@
+{
+  "songName": "Dispersion-Relation",
+  "artist": "Kevin Mcleod",
+  "length": 244,
+  "tiles": [
+    { "type": "tap", "press": 1500, "slot": 2, "release": null },
+    { "type": "tap", "press": 1700, "slot": 2, "release": null }
+  ]
+}

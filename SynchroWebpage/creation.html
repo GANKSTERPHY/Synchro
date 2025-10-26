@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Song Creator | Synchrom</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet">
+
+<!-- Reuse main stylesheet -->
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* Page-specific styles only */
+#container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  padding-top: 120px;
+}
+
+#leftPanel {
+  width: 320px;
+  padding: 30px 25px;
+  background: rgba(38, 11, 104, 0.3);
+  backdrop-filter: blur(10px);
+  border-right: 2px solid rgba(194, 49, 201, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+  box-shadow: 0 0 30px rgba(194, 49, 201, 0.2);
+}
+
+#leftPanel h2 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #b310ff, #ff66cc, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#leftPanel input[type="text"],
+#leftPanel input[type="number"] {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(194, 49, 201, 0.4);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+#leftPanel input:focus {
+  outline: none;
+  border-color: #C231CA;
+  box-shadow: 0 0 15px rgba(194, 49, 201, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#leftPanel input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.typeToggle {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: 2px solid rgba(194, 49, 201, 0.4);
+  background: rgba(38, 11, 104, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: auto;
+}
+
+.typeToggle:hover {
+  transform: scale(1.05);
+  border-color: #C231CA;
+  box-shadow: 0 0 15px rgba(194, 49, 201, 0.3);
+}
+
+.typeToggle.active {
+  background: linear-gradient(120deg, #260B69, #C231CA);
+  border-color: #ff00ff;
+  box-shadow: 0 0 20px rgba(194, 49, 201, 0.6);
+}
+
+#leftPanel button:not(.typeToggle) {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(120deg, #260B69, #C231CA);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(194, 49, 201, 0.3);
+}
+
+#leftPanel button:not(.typeToggle):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(194, 49, 201, 0.5);
+}
+
+#leftPanel button:not(.typeToggle):active {
+  transform: translateY(0);
+}
+
+textarea {
+  width: 100%;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #00ffff;
+  border: 1px solid rgba(194, 49, 201, 0.4);
+  border-radius: 10px;
+  padding: 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #C231CA;
+  box-shadow: 0 0 15px rgba(194, 49, 201, 0.4);
+}
+
+#gameContainer {
+  flex: 1;
+  overflow-y: scroll;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+#gameContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+#gameContainer::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#gameContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #260B69, #C231CA);
+  border-radius: 10px;
+}
+
+#gameArea {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  width: fit-content;
+}
+
+.tile {
+  border: 1px solid rgba(194, 49, 201, 0.3);
+  background: rgba(38, 11, 104, 0.2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 80px;
+  height: 35px;
+  border-radius: 4px;
+}
+
+.tile:hover {
+  background: rgba(194, 49, 201, 0.3);
+  border-color: #C231CA;
+}
+
+.tile.active {
+  background: linear-gradient(135deg, #00ff88, #00ffff);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+  border-color: #00ffff;
+}
+
+.tile.hold {
+  background: linear-gradient(135deg, #00ffff, #0088ff);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  border-color: #00ffff;
+}
+
+#leftPanel::-webkit-scrollbar {
+  width: 8px;
+}
+
+#leftPanel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#leftPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #260B69, #C231CA);
+  border-radius: 10px;
+}
+
+body {
+  background: radial-gradient(circle at top right, #260B68, transparent 50%),
+              radial-gradient(circle at bottom left, #c231c9, transparent 60%),
+              #000;
+}
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<div class="logo">
+  <a href="index.html">
+    <img src="logo.svg" alt="Website Logo">
+  </a>
+</div>
+
+<!-- Navbar -->
+<nav>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="result.html">Result</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="documentation.html#ourteam">Member</a></li>
+  </ul>
+</nav>
+
+<div id="container">
+  <div id="leftPanel">
+    <h2>Song Creator</h2>
+    <input type="text" id="songName" placeholder="Song Name" />
+    <input type="text" id="artist" placeholder="Artist" />
+    <input type="number" id="length" placeholder="Length (seconds)" />
+    <button onclick="resizeGrid()">Set Length</button>
+    
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+      <button class="typeToggle active" id="tapBtn" onclick="setTileType('tap')">Tap</button>
+      <button class="typeToggle" id="holdBtn" onclick="setTileType('hold')">Hold</button>
+    </div>
+    
+    <button onclick="exportJSON()" style="margin-top: 20px;">Export JSON</button>
+    <textarea id="jsonOutput" readonly></textarea>
+  </div>
+
+  <div id="gameContainer">
+    <div id="gameArea"></div>
+  </div>
+</div>
+
+<script>
+const gameArea = document.getElementById('gameArea');
+const gameContainer = document.getElementById('gameContainer');
+const COLUMNS = 4;
+let ROWS = 100;
+let currentTileType = 'tap';
+let isDragging = false;
+let dragStartRow = null;
+let dragColumn = null;
+let dragPreview = null;
+let tilesData = [];
+const timePerTile = 200;
+
+function setTileType(type){
+  currentTileType = type;
+  document.querySelectorAll('.typeToggle').forEach(btn=>btn.classList.remove('active'));
+  if(type==='tap') document.getElementById('tapBtn').classList.add('active');
+  if(type==='hold') document.getElementById('holdBtn').classList.add('active');
+}
+
+function createGrid(){
+  gameArea.innerHTML='';
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLUMNS;c++){
+      const tile=document.createElement('div');
+      tile.classList.add('tile');
+      tile.dataset.row=r;
+      tile.dataset.col=c;
+      tile.addEventListener('mousedown',()=>onMouseDown(tile));
+      tile.addEventListener('mouseenter',()=>onMouseEnter(tile));
+      tile.addEventListener('mouseup',()=>onMouseUp(tile));
+      gameArea.appendChild(tile);
+    }
+  }
+  setTimeout(()=>{gameContainer.scrollTop=gameContainer.scrollHeight;},50);
+  renderTiles();
+}
+
+createGrid();
+
+function rowToPress(row){
+  return (ROWS - row - 1) * timePerTile;
+}
+
+function clearTileVisualAll(){
+  document.querySelectorAll('.tile').forEach(tile=>tile.classList.remove('active','hold'));
+}
+
+function renderTiles(){
+  clearTileVisualAll();
+  tilesData.forEach(t=>{
+    if(t.type==='tap'){
+      const tile=document.querySelector(`.tile[data-col='${t.col}'][data-row='${t.startRow}']`);
+      if(tile) tile.classList.add('active');
+    } else if(t.type==='hold'){
+      for(let r=t.startRow;r<=t.endRow;r++){
+        const tile=document.querySelector(`.tile[data-col='${t.col}'][data-row='${r}']`);
+        if(tile) tile.classList.add('active','hold');
+      }
+    }
+  });
+  if(dragPreview){
+    for(let r=dragPreview.startRow;r<=dragPreview.endRow;r++){
+      const tile=document.querySelector(`.tile[data-col='${dragPreview.col}'][data-row='${r}']`);
+      if(tile) tile.classList.add('active','hold');
+    }
+  }
+}
+
+function onMouseDown(tile){
+  const col = parseInt(tile.dataset.col);
+  const row = parseInt(tile.dataset.row);
+
+  if(currentTileType==='tap'){
+    const holdIndex = tilesData.findIndex(t => t.type==='hold' && t.col===col && row >= t.startRow && row <= t.endRow);
+    if(holdIndex !== -1){
+      tilesData.splice(holdIndex, 1);
+      renderTiles();
+      return;
+    }
+    const tapIndex = tilesData.findIndex(t => t.type==='tap' && t.col===col && t.startRow===row);
+    if(tapIndex !== -1){
+      tilesData.splice(tapIndex, 1);
+    } else {
+      tilesData.push({type:'tap', col, startRow:row, endRow:row, press:rowToPress(row), release:null});
+    }
+    renderTiles();
+  } else if(currentTileType==='hold'){
+    isDragging=true;
+    dragStartRow=row;
+    dragColumn=col;
+    dragPreview={startRow: row, endRow: row, col: col};
+    renderTiles();
+  }
+}
+
+function onMouseEnter(tile){
+  if(isDragging && currentTileType==='hold'){
+    const row=parseInt(tile.dataset.row);
+    const col=parseInt(tile.dataset.col);
+    if(col===dragColumn){
+      dragPreview.startRow = Math.min(dragStartRow,row);
+      dragPreview.endRow = Math.max(dragStartRow,row);
+      renderTiles();
+    }
+  }
+}
+
+function onMouseUp(tile){
+  if(isDragging && currentTileType==='hold'){
+    finalizeHold(dragPreview.startRow, dragPreview.endRow, dragPreview.col);
+    dragPreview=null;
+  }
+  isDragging=false;
+  dragStartRow=null;
+  dragColumn=null;
+}
+
+function finalizeHold(startRow,endRow,col){
+  if(startRow===endRow) return;
+
+  let newStart=startRow, newEnd=endRow;
+  tilesData = tilesData.filter(t=>{
+    if(t.type==='hold' && t.col===col && t.endRow>=newStart && t.startRow<=newEnd){
+      newStart=Math.min(newStart,t.startRow);
+      newEnd=Math.max(newEnd,t.endRow);
+      return false;
+    }
+    return true;
+  });
+
+  tilesData = tilesData.filter(t=>!(t.type==='tap' && t.col===col && t.startRow>=newStart && t.startRow<=newEnd));
+
+  tilesData.push({
+    type:'hold',
+    col,
+    startRow:newStart,
+    endRow:newEnd,
+    press: rowToPress(newEnd),
+    release: rowToPress(newStart)
+  });
+
+  renderTiles();
+}
+
+function resizeGrid(){
+  const songLength=parseFloat(document.getElementById('length').value)||10;
+  ROWS = Math.ceil((songLength*1000)/timePerTile);
+  tilesData=[];
+  createGrid();
+}
+
+function exportJSON(){
+  const songName=document.getElementById('songName').value||'Unknown';
+  const artist=document.getElementById('artist').value||'Unknown';
+  const length=parseInt(document.getElementById('length').value)||0;
+
+  const sortedTiles = [...tilesData].sort((a,b)=>a.press-b.press);
+  const tilesOutput = sortedTiles.map(t=>({type:t.type, press:t.press, slot:t.col+1, release:t.release}));
+
+  document.getElementById('jsonOutput').value = JSON.stringify({songName,artist,length,tiles:tilesOutput},null,2);
+}
+</script>
+
+</body>
+</html>

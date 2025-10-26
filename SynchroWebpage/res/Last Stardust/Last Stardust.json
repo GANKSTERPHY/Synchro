@@ -1,0 +1,9 @@
+{
+  "songName": "Last Stardust",
+  "artist": "Ken Beats",
+  "length": 342,
+  "tiles": [
+    { "type": "tap", "press": 1500, "slot": 2, "release": null },
+    { "type": "tap", "press": 1700, "slot": 2, "release": null }
+  ]
+}
