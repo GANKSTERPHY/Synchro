@@ -95,7 +95,7 @@ body {
 
 /* ====== HOME PAGE ====== */
 .home-page {
-    background-image: url('/SynchroWebpage/assets/Img/Arcade.jpg');
+    background-image: url('assets/Img/Arcade.jpg');
 }
 
 .hero {
@@ -143,7 +143,7 @@ body {
 
 /* ====== DASHBOARD PAGE ====== */
 .dashboard-page {
-  background-image: url('/SynchroWebpage/assets/Img/disco.jpg');
+  background-image: url('assets/Img/disco.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -203,7 +203,7 @@ body {
   width: 130px;
   height: 130px;
   border-radius: 50%;
-  background-image: url('/SynchroWebpage/assets/Img/cd.png');
+  background-image: url('assets/Img/cd.png');
   background-size: cover;
   background-position: center;
   margin-right: 35px;
