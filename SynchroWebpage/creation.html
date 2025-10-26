@@ -623,7 +623,19 @@ function exportJSON(){
   const sortedTiles = [...tilesData].sort((a,b)=>a.press-b.press);
   const tilesOutput = sortedTiles.map(t=>({type:t.type, press:t.press, slot:t.col+1, release:t.release}));
 
-  document.getElementById('jsonOutput').value = JSON.stringify({songName,artist,length,tiles:tilesOutput},null,2);
+  const jsonData = JSON.stringify({songName,artist,length,tiles:tilesOutput},null,2);
+  document.getElementById('jsonOutput').value = jsonData;
+  
+  // Download the JSON file
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${songName.replace(/[^a-z0-9]/gi, '_')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 </script>
 
