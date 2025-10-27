@@ -4,7 +4,7 @@ Physical Computing Project 2025 - IT KMITL
 
 [//]: # ([Contributors]&#40;#Contributors&#41;)
 
-- [Arduino sensor](Link)
+- [Webpage Synchro game](https://ganksterphy.github.io/Synchro/)
 
 ## [บทคัดย่อ]
 
