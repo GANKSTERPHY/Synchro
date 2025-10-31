@@ -32,6 +32,7 @@ function getArduinoIP() {
     return ip ? `http://${ip.replace(/^https?:\/\//, '')}` : null;
 }
 
+
 // ===============================
 // Game State Management
 // ===============================
