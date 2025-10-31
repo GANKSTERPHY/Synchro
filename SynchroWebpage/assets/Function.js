@@ -33,9 +33,29 @@ async function loadBuiltInSongs() {
   renderSongs();
 }
 
+// ===============================
+// Cookie Management
+// ===============================
+function setCookie(name, value, days = 365) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+}
+
 // Connect to Arduino
 async function connectArduino() {
-  const ipInput = document.getElementById("arduinoIP").value;
+  const ipInput = "192.168.1.177";
   arduinoIP = `http://${ipInput.replace(/^https?:\/\//, '')}`;
   
   try {
@@ -48,11 +68,11 @@ async function connectArduino() {
     
     showStatus("Connected to Arduino!", "success");
     
-    const data = await res.json().catch(() => null);
-    if (data && data.songs) {
-      console.log("Arduino song list:", data.songs);
-      showStatus(`Arduino has ${data.songs.length} songs: ${data.songs.join(', ')}`, "info");
-    }
+    // const data = await res.json().catch(() => null);
+    // if (data && data.songs) {
+    //   console.log("Arduino song list:", data.songs);
+    //   showStatus(`Arduino has ${data.songs.length} songs: ${data.songs.join(', ')}`, "info");
+    // }
   } catch (err) {
     arduinoConnected = false;
     document.getElementById("arduinoStatus").className = "arduino-status offline";
