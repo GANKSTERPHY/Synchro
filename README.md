@@ -50,7 +50,7 @@
     4. Amplifier GF 1002
 2. **Modules:** 
     1. ESP32
-    2. Buzzer
+    2. ลำโพง 0.5W 8 โอห์ม
 3. **Tools:**  
     1. Arduino IDE
     2. สาย USB-C
