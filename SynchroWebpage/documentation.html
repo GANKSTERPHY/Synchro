@@ -101,25 +101,6 @@
     </p>
   </div>
 
-  <!-- สคริปต์เลื่อนโชว์ -->
-  <script>
-    function revealOnScroll() {
-      const reveals = document.querySelectorAll('.reveal');
-      for (let i = 0; i < reveals.length; i++) {
-        const windowHeight = window.innerHeight;
-        const elementTop = reveals[i].getBoundingClientRect().top;
-        const elementVisible = 100;
-        if (elementTop < windowHeight - elementVisible) {
-          reveals[i].classList.add('active');
-        } else {
-          reveals[i].classList.remove('active');
-        }
-      }
-    }
-    window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll();
-  </script>
-
   <!-- ส่วนท้าย Code & Learn More -->
 <div class="bottom-section reveal">
   <div class="left-panel">
@@ -185,20 +166,6 @@ void loop() {
     </div>
   </div>
 </div>
-
-  <script>
-  // ปุ่มดูโค้ดเพิ่มเติม
-  const btn = document.getElementById("toggleCode");
-  const codeBox = document.getElementById("codeBox");
-  let expanded = false;
-
-  btn.addEventListener("click", () => {
-    expanded = !expanded;
-    codeBox.classList.toggle("expanded");
-    btn.textContent = expanded ? "Hide Code" : "See More";
-  });
-  </script>
-
   <div class="content reveal">
     <h1>What Different from normal rhythm game ?</h1>
     <p>
@@ -245,5 +212,6 @@ void loop() {
       <p>Web Frontend/Poster</p>
     </div>
   </div>
+  <script src="assets/Document.js"></script>
 </body>
 </html>
