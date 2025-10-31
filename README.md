@@ -1,10 +1,16 @@
 # Physical Computing Project 2025 - IT KMITL
 
+---
+
 ## Synchro (RhythmController game)
+
+---
 
 - [Webpage Synchro game](https://ganksterphy.github.io/Synchro/)
 - [Video present Synchro game](https://youtube.com)
 - [Poster Synchro game](https://youtube.com)
+  
+---
 
 ### บทคัดย่อ
 
@@ -12,11 +18,14 @@
 
 แนวคิดของโครงการคือการใช้ “เกมจังหวะ (Rhythm Game)” เป็นสื่อกลางในการฝึกสมาธิ โดยออกแบบให้ผู้เล่นต้องจดจ่อกับจังหวะดนตรี เวลา และตำแหน่งการกดปุ่มอย่างต่อเนื่อง การเล่นซ้ำจะช่วยเสริม การโฟกัสเฉพาะจุด (focused attention) และ การตอบสนองที่แม่นยำ (accurate response) ซึ่งเป็นทักษะที่สามารถถ่ายทอดกลับไปสู่การเรียนหรือการทำงานจริงได้
 
+---
+
 ### กลุ่มผู้ใช้ที่คาดว่าจะได้รับประโยชน์ :
 1. ผู้เล่นทั่วไป ที่ต้องการสื่อเพื่อความเพลิดเพลินและผ่อนคลายแต่ยังอยากพัฒนาสมาธิไปพร้อมกัน
 2. นักเรียน/นักศึกษา ที่ต้องการฝึกการจดจ่อผ่านกิจกรรมที่ไม่จำเจ
 3. นักพัฒนาและผู้สนใจด้าน Embedded/IoT ที่ต้องการเห็นตัวอย่างการผสานฮาร์ดแวร์กับซอฟต์แวร์ในบริบทเกมเพื่อการเรียนรู้
 
+---
 ### Input และ Output ของ Project นี้ Input :
 #### Input : 
 1. การกดปุ่มของผู้เล่น (4 ปุ่มสี)
@@ -26,6 +35,8 @@
 #### Output : 
 1. เสียงเพลงจากลำโพง
 2. Combo, Accuracy (แสดงบนเว็บและ/หรือ LCD) สรุปสถิติการเล่นแต่ละเพลง
+
+---
 
 ### Overview ความน่าสนใจ ความแปลกใหม่ :
 1. ผู้เล่นสามารถโต้ตอบกับเกมผ่านปุ่มจริงๆ
@@ -41,6 +52,8 @@
 ### ดีกว่า Project เกม Rhythm ตู้อาร์เคด Board Controller :
 1. การแสดงค่าให้เห็นได้ชัดเจนผ่านช่องทางเว็ปไซต์ เพราะมีการเชื่อมต่อผ่าน wifi และ Database
 2. การสรุปผลการกดผ่านทางเว็ปไซต์ ใช้บอร์ด Arduino ในการเก็บค่า คำนวณแล้วส่งต่อเก็บใน Database
+
+---
 
 ### Hardware
 1. **Sensors & Actuators:** 
@@ -59,6 +72,8 @@
     5. Jumper wires
     6. Powerbank
 
+---
+
 ### Libraries , Modules
 1. WiFi.h
 2. ESP32 dev module
@@ -67,7 +82,7 @@
 5. SD.h
 6. MQTTClient.h
 
-### รูปภาพอุปกรณ์ Synchro (RhythmController game):
+---
 
 ### การทำงาน / วิธีเล่น :
 1. Start menu จะขึ้นให้ Click button to start game
@@ -75,8 +90,11 @@
 3. เริ่มนับถอยหลัง 3 วินาที แล้วเริ่มเล่นเกม กดปุ่มให้ตรงกับจังหวะสีที่ตกมาจากด้านบน
 4. เล่นจบรอสรุปผลการเล่นทางหน้าเว็ป
 
-### Poster :
-## ![Infographic](Physical_computing_infographic.png)
+---
+
+### รูปภาพชิ้นงาน
+## ![Synchou](/SynchroController/Teacher.png)
+
 ### Contributors
 
 | StudentID       | Name                                  | Responsibility                      | Img                                                                             |
@@ -88,7 +106,7 @@
 
 
 ### นำเสนอ
-## ![Infographic](/SynchroController/Teacher.png)
+## ![Teacher](/SynchroController/Teacher.png)
 รศ.ดร. ปานวิทย์ ธุวะนุติ
 อาจารย์ประจำคณะเทคโนโลยีสารสนเทศ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
 ### Tools
