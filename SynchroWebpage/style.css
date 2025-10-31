@@ -115,9 +115,24 @@ body {
 }
 
 .text-box h1 {
-    font-size: 4rem;
+    font-size: 3rem;
     margin-bottom: 20px;
+  font-family: "Nico Moji", sans-serif;
+  font-size: 60px;
+  letter-spacing: 4px;
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #ff66ff,
+    0 0 30px #00ffff,
+    0 0 40px #ff00ff;
+  animation: glow 1.2s ease-in-out infinite alternate;
 }
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ff00ff, 0 0 15px #ff33cc, 0 0 25px #00ffff; }
+  to   { text-shadow: 0 0 15px #00ffff, 0 0 25px #ff33ff, 0 0 45px #ff00ff; }
+}
+
+
 
 .text-box p {
     font-size: 1rem;

@@ -185,8 +185,6 @@ nav a:hover {
   100% { transform: translate(0, 0) rotate(0deg) scale(1.1); }
 }
 
-
-
 /* 🔹 กล่องรวมล่าง */
 .bottom-container {
   display: flex;
