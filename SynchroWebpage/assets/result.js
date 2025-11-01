@@ -42,6 +42,7 @@ let pollingInterval = null;
 let progressInterval = null;
 let songStartTime = null;
 
+
 // ===============================
 // Arduino Communication
 // ===============================
@@ -49,8 +50,8 @@ async function checkGameStatus() {
     const arduinoIP = getArduinoIP();
     if (!arduinoIP) return;
 
+    // ถ้าจะใช้จริงค่อยปลดคอมเมนต์
     // try {
-    //     // Check if song is playing
     //     const statusRes = await fetch(arduinoIP + "/status", {
     //         mode: 'cors',
     //         signal: AbortSignal.timeout(2000)
@@ -60,11 +61,9 @@ async function checkGameStatus() {
     //     if (status.playing && status.currentSong) {
     //         handlePlayingState(status);
     //     } else if (isPlaying) {
-    //         // Song just ended
     //         handleSongEnd();
     //     }
     // } catch (err) {
-    //     // Silent fail - Arduino might be offline
     //     console.log("Arduino not responding:", err.message);
     // }
 }
@@ -81,12 +80,10 @@ function handlePlayingState(status) {
         document.getElementById("nowPlayingTitle").textContent = status.currentSong;
         document.getElementById("nowPlayingArtist").textContent = status.artist || "Unknown Artist";
 
-        // Update stars if difficulty is provided
         if (status.difficulty) {
             updateStars(status.difficulty);
         }
 
-        // Start progress bar
         startProgressBar(status.length || 180);
     }
 }
@@ -96,8 +93,6 @@ async function handleSongEnd() {
     isPlaying = false;
     document.getElementById("pageTitle").textContent = "Game Result";
     stopProgressBar();
-
-    // Fetch result from Arduino
     await fetchGameResult();
 }
 
@@ -113,67 +108,72 @@ async function fetchGameResult() {
         });
         const result = await res.json();
 
-        // Arduino sends: {"songName":"...", "artist":"...", "difficulty":3, "result":{"miss":0, "ok":2, "great":283, "perfect":127}}
+        // Arduino format: {"songName":"...", "artist":"...", "difficulty":3, "result":{"miss":0, "ok":2, "great":283, "perfect":127}}
         if (result && result.result) {
-            saveToHistory(result); // This will display AND save
+            saveToHistory(result);
         }
     } catch (err) {
         console.error("Failed to fetch result:", err);
     }
 }
 
-// Display result
+
+// ===============================
+// Grade helper (ศูนย์รวมความจริง)
+// ===============================
+function getGradeFromScore(score) {
+    if (score >= 95) return "Perfect!";
+    else if (score >= 70) return "Great!";
+    else if (score >= 50) return "Okay";
+    else if (score >= 20) return "Too bad!";
+    return "Miss";
+}
+
+
+// ===============================
+// Display result (จาก Arduino หรือจาก history)
+// ===============================
 function displayResult(result) {
-    // Handle both formats: Arduino format with nested result, or flat format from history
     let miss, ok, great, perfect, difficulty, songName, artist;
     
     if (result.result) {
-        // Arduino format: {"songName":"...", "artist":"...", "difficulty":3, "result":{...}}
+        // Arduino format
         ({ miss, ok, great, perfect } = result.result);
         difficulty = result.difficulty;
         songName = result.songName;
         artist = result.artist;
     } else {
-        // Flat format from history: {"songName":"...", "artist":"...", "miss":0, "ok":2, ...}
+        // Flat format from history
         ({ miss, ok, great, perfect, difficulty, songName, artist } = result);
     }
     
     const total = miss + ok + great + perfect;
 
-    // Calculate score (weighted: perfect=1.0, great=0.8, ok=0.5, miss=0)
     const score = total > 0
         ? Math.round(((ok * 0.5 + great * 0.8 + perfect * 1.0) / total) * 100)
         : 0;
 
-    // Update UI
     document.getElementById("missStat").textContent = miss;
     document.getElementById("okayStat").textContent = ok;
     document.getElementById("greatStat").textContent = great;
     document.getElementById("perfectStat").textContent = perfect;
     document.getElementById("scoreValue").textContent = score + "%";
 
-    // Grade
-    let grade = "Miss";
-    if (score >= 95) grade = "Perfect!";
-    else if (score >= 70) grade = "Great!";
-    else if (score >= 50) grade = "Okay";
-    else if (score >= 20) grade = "Too bad!";
-
+    const grade = getGradeFromScore(score);
     document.getElementById("gradeBadge").textContent = grade;
 
-    // Update song info
     if (songName) document.getElementById("nowPlayingTitle").textContent = songName;
     if (artist) document.getElementById("nowPlayingArtist").textContent = artist;
 
-    // Update stars based on difficulty from JSON
     updateStars(difficulty || 3);
 }
 
-// Update star rating based on difficulty from JSON (not score)
+
+// ===============================
+// Update star rating based on difficulty
+// ===============================
 function updateStars(difficulty = 3) {
     const stars = document.querySelectorAll('.song-stars .star');
-    
-    // Ensure difficulty is between 1-5
     const starCount = Math.max(1, Math.min(5, difficulty));
     
     stars.forEach((star, index) => {
@@ -181,18 +181,19 @@ function updateStars(difficulty = 3) {
     });
 }
 
+
+// ===============================
 // Save to history
+// ===============================
 function saveToHistory(result) {
     const history = getScoreHistory();
 
-    // Extract data from Arduino format: {"songName":"...", "artist":"...", "difficulty":3, "result":{...}}
     const { miss, ok, great, perfect } = result.result;
     const total = miss + ok + great + perfect;
     const score = total > 0
         ? Math.round(((ok * 0.5 + great * 0.8 + perfect * 1.0) / total) * 100)
         : 0;
 
-    // Save in flat format for easier display later
     const entry = {
         songName: result.songName,
         artist: result.artist,
@@ -201,52 +202,48 @@ function saveToHistory(result) {
         great,
         perfect,
         score,
-        difficulty: result.difficulty || 3, // Store difficulty from JSON
+        difficulty: result.difficulty || 3,
         timestamp: Date.now()
     };
 
-    history.unshift(entry); // Add to beginning
-
-    // Keep only last 20 entries
+    history.unshift(entry);
     if (history.length > 20) history.length = 20;
 
     saveScoreHistory(history);
     
-    // Update display with latest entry
-    displayResult(entry);
+    // ใช้ตัวเดียวกับที่ history ใช้
+    updateMainUI(entry);
     renderHistory();
 }
 
-// Update main UI with entry data (from history or new result)
+
+// ===============================
+// Update main UI with entry data
+// ===============================
 function updateMainUI(entry) {
-    // Display result in main UI
     document.getElementById("missStat").textContent = entry.miss;
     document.getElementById("okayStat").textContent = entry.ok;
     document.getElementById("greatStat").textContent = entry.great;
     document.getElementById("perfectStat").textContent = entry.perfect;
     document.getElementById("scoreValue").textContent = entry.score + "%";
 
-    // Set grade
-    let grade = "Miss";
-    if (entry.score >= 95) grade = "Perfect!";
-    else if (entry.score >= 85) grade = "Great!";
-    else if (entry.score >= 70) grade = "Okay";
+    const grade = getGradeFromScore(entry.score);
     document.getElementById("gradeBadge").textContent = grade;
 
-    // Update stars based on difficulty from JSON
     updateStars(entry.difficulty || 3);
 
-    // Update now playing info
     document.getElementById("nowPlayingTitle").textContent = entry.songName;
     document.getElementById("nowPlayingArtist").textContent = entry.artist || "Unknown Artist";
 }
 
-// Render history (skip first entry - it's shown in main UI)
+
+// ===============================
+// Render history (skip first entry)
+// ===============================
 function renderHistory() {
     const history = getScoreHistory();
     const container = document.getElementById("historyList");
 
-    // Skip the first entry (latest result shown in main UI)
     const historyToShow = history.slice(1);
 
     if (historyToShow.length === 0) {
@@ -255,11 +252,7 @@ function renderHistory() {
     }
 
     container.innerHTML = historyToShow.map(entry => {
-        let gradeText = "Miss";
-        if (entry.score >= 95) gradeText = "Perfect";
-        else if (entry.score >= 85) gradeText = "Great";
-        else if (entry.score >= 70) gradeText = "Okay";
-
+        const gradeText = getGradeFromScore(entry.score);
         return `
           <div class="history-item">
             <div class="song-info">
@@ -271,6 +264,7 @@ function renderHistory() {
         `;
     }).join('');
 }
+
 
 // ===============================
 // Progress Bar
@@ -297,6 +291,7 @@ function stopProgressBar() {
     document.getElementById("progressFill").style.width = "0%";
 }
 
+
 // ===============================
 // Control Functions
 // ===============================
@@ -312,7 +307,6 @@ function resetGame() {
         document.getElementById("nowPlayingArtist").textContent = "---";
         stopProgressBar();
 
-        // Reset stars
         document.querySelectorAll('.song-stars .star').forEach(star => {
             star.style.opacity = '1';
         });
@@ -330,6 +324,7 @@ function previousSong() {
 function nextSong() {
     alert("Next song - Please use the dashboard or function page to control playback");
 }
+
 
 // ===============================
 // Fade-up Animation
@@ -352,23 +347,19 @@ faders.forEach(fader => {
     appearOnScroll.observe(fader);
 });
 
+
 // ===============================
 // Initialize
 // ===============================
 function init() {
-    // Load and display latest result from history
     const history = getScoreHistory();
     if (history.length > 0) {
         const latest = history[0];
-        
-        // History is stored in flat format, so we can pass it directly
-        displayResult(latest);
+        updateMainUI(latest);
     }
 
-    // Render history (excluding latest)
     renderHistory();
 
-    // Start polling if Arduino IP is set
     const arduinoIP = getArduinoIP();
     if (arduinoIP) {
         console.log("Arduino IP found:", arduinoIP);
@@ -377,6 +368,7 @@ function init() {
         console.log("No Arduino IP set. Please set it from the dashboard or function page.");
     }
 }
+
 
 // ===============================
 // Testing Functions
@@ -389,7 +381,15 @@ function setArduinoIP(ip = '192.168.1.177') {
 }
 
 // Create mock game result
-function createMockResult(songName = 'Test Song', artist = 'Test Artist', miss = 0, ok = 2, great = 283, perfect = 127, difficulty = 3) {
+function createMockResult(
+    songName = 'Test Song',
+    artist = 'Test Artist',
+    miss = 0,
+    ok = 2,
+    great = 283,
+    perfect = 127,
+    difficulty = 3
+) {
     const history = JSON.parse(getCookie('scoreHistory') || '[]');
 
     const total = miss + ok + great + perfect;
@@ -415,7 +415,6 @@ function createMockResult(songName = 'Test Song', artist = 'Test Artist', miss =
     setCookie('scoreHistory', JSON.stringify(history));
     console.log('✓ Mock result added:', entry);
     
-    // Refresh display
     init();
 }
 
@@ -438,13 +437,12 @@ function generateTestHistory(count = 5) {
         const ok = Math.floor(Math.random() * 30);
         const great = Math.floor(Math.random() * 200) + 100;
         const perfect = total - miss - ok - great;
-        const difficulty = Math.floor(Math.random() * 5) + 1; // 1-5 stars
+        const difficulty = Math.floor(Math.random() * 5) + 1;
 
         createMockResult(song.name, song.artist, miss, ok, great, perfect, difficulty);
     }
     console.log(`✓ Generated ${count} test results`);
     
-    // Refresh display
     init();
 }
 
@@ -453,7 +451,6 @@ function clearAllGameData() {
     setCookie('scoreHistory', '[]');
     console.log('✓ All game data cleared');
     
-    // Refresh display
     init();
 }
 
@@ -471,6 +468,7 @@ function quickTest() {
     console.log('✓ Quick test setup complete! Page refreshed.');
 }
 
+
 // ===============================
 // Usage Examples
 // ===============================
@@ -479,14 +477,12 @@ console.log(`
 
 Usage:
 ------
-setArduinoIP('192.168.1.177')           - Set Arduino IP
-createMockResult('Song', 'Artist', 0, 2, 283, 127, 4) - Add one result (4 star difficulty)
-generateTestHistory(5)                  - Generate 5 random results
-clearAllGameData()                      - Clear all data
-viewAllCookies()                        - View current cookies
-quickTest()                             - Setup everything at once
-
-Try: quickTest()
+setArduinoIP('192.168.1.177')
+createMockResult('Song', 'Artist', 0, 2, 283, 127, 4)
+generateTestHistory(5)
+clearAllGameData()
+viewAllCookies()
+quickTest()
 `);
 
 // Start the app
