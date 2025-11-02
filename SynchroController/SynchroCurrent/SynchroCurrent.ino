@@ -14,8 +14,8 @@ const int button1 = 25;  // lane 0
 const int button2 = 26;  // lane 1
 const int button3 = 27;  // lane 2
 const int button4 = 14;  // lane 3
-const char* ssid = "Guh";
-const char* password = "Nuhuhwhysolong";
+const char* ssid = "WIFI_SSID";
+const char* password = "WIFI_PASS";
 
 // SD on HSPI
 #define SD_SCK   32
