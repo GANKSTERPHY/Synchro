@@ -441,45 +441,101 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ===== Footer (theme + your fonts) ===== */
 .site-footer {
-  background: rgba(0, 0, 0, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  background: radial-gradient(circle at top, rgba(0, 255, 255, 0.12), rgba(3, 10, 16, 0.95));
+  border-top: 1px solid rgba(0, 255, 255, 0.25);
   text-align: center;
-  padding: 40px 20px 60px;
-  color: #fff;
-  font-family: 'Noto Sans Thai', sans-serif;
+  padding: 48px 20px 65px;
+  color: #e2f6ff;
+  /* ฟอนต์หลักใช้ Noto Sans Thai ตามที่โหลดมาแล้ว */
+  font-family: "Noto Sans Thai", "Mulish", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   margin-top: 80px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* glow ข้างหลังให้ดูเป็นหน้าเกม */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.35), rgba(0, 255, 255, 0));
+  filter: blur(40px);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.site-footer p {
+  margin: 0;
+  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+}
+
+/* กล่องปุ่ม */
 .footer-buttons {
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-top: 18px;
+  margin-top: 22px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
 }
 
+/* ปุ่มพื้นฐาน */
 .footer-btn {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: 999px;
   text-decoration: none;
+  /* ปุ่มใช้ Orbitron ให้ฟีล tech */
+  font-family: "Orbitron", "Mulish", "Noto Sans Thai", sans-serif;
   font-weight: 600;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.75rem; /* Orbitron ตัวมันจะดูกว้าง */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background 0.12s ease-out;
 }
 
+/* ปุ่ม GitHub โทนมืด */
 .github-btn {
-  background: #0f172a;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(1, 7, 10, 0.35);
+  border: 1px solid rgba(226, 246, 255, 0.35);
+  color: #e2f6ff;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.07);
 }
 
+/* ปุ่ม Poster ให้เด่น */
 .poster-btn {
-  background: #00ffff;
+  background: linear-gradient(150deg, #00ffff 0%, #70fbff 60%);
   color: #03181f;
+  border: 1px solid rgba(0, 255, 255, 0.95);
+  box-shadow: 0 8px 28px rgba(0, 255, 255, 0.28);
 }
 
 .footer-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* มือถือ */
+@media (max-width: 600px) {
+  .site-footer {
+    padding-bottom: 80px;
+  }
+  .footer-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer-btn {
+    width: min(260px, 100%);
+    margin: 0 auto;
+    text-align: center;
+  }
 }
