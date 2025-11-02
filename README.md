@@ -96,11 +96,9 @@
    - Push Buttons 4 ตัว  
    - TFT LCD ขนาด 3.2" (Color module)  
    - SD Card Adapter  
-   - Amplifier GF 1002  
 
 2. **Modules**
    - ESP32  
-   - ลำโพง 0.5W 8 โอห์ม  
 
 3. **Tools**
    - Arduino IDE  
