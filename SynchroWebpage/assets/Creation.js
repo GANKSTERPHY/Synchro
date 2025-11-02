@@ -1,5 +1,13 @@
 const gameArea = document.getElementById('gameArea');
 const gameContainer = document.getElementById('gameContainer');
+const audioPlayer = document.createElement('audio');
+audioPlayer.style.display = 'none';
+document.body.appendChild(audioPlayer);
+
+const audioFileInput = document.getElementById('audioFile');
+const timeDisplay = document.getElementById('timeDisplay');
+const playPauseBtn = document.getElementById('playPauseBtn');
+
 const COLUMNS = 4;
 let ROWS = 100;
 let currentTileType = 'tap';
@@ -9,6 +17,108 @@ let dragColumn = null;
 let dragPreview = null;
 let tilesData = [];
 const timePerTile = 200;
+let isPlaying = false;
+
+// Audio file handling
+audioFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const url = URL.createObjectURL(file);
+    audioPlayer.src = url;
+    
+    // Get duration when loaded
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      const duration = Math.ceil(audioPlayer.duration);
+      document.getElementById('length').value = duration;
+      ROWS = Math.ceil((duration * 1000) / timePerTile);
+      tilesData = [];
+      createGrid();
+      updateTimeDisplay();
+    }, { once: true });
+  }
+});
+
+// Audio time update
+audioPlayer.addEventListener('timeupdate', () => {
+  updateTimeDisplay();
+  if (isPlaying) {
+    syncScrollToAudio();
+  }
+});
+
+audioPlayer.addEventListener('ended', () => {
+  isPlaying = false;
+  playPauseBtn.textContent = '▶ Play';
+});
+
+function updateTimeDisplay() {
+  const current = formatTime(audioPlayer.currentTime);
+  const total = formatTime(audioPlayer.duration || 0);
+  timeDisplay.textContent = `${current} / ${total}`;
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function togglePlayPause() {
+  if (!audioPlayer.src) {
+    alert('Please upload an audio file first!');
+    return;
+  }
+  
+  if (isPlaying) {
+    audioPlayer.pause();
+    playPauseBtn.textContent = '▶ Play';
+  } else {
+    audioPlayer.play();
+    playPauseBtn.textContent = '❚❚ Pause';
+  }
+  isPlaying = !isPlaying;
+}
+
+function stopAudio() {
+  audioPlayer.pause();
+  audioPlayer.currentTime = 0;
+  isPlaying = false;
+  playPauseBtn.textContent = '▶ Play';
+  updateTimeDisplay();
+}
+
+// Sync scroll position to audio time
+function syncScrollToAudio() {
+  const currentTime = audioPlayer.currentTime * 1000;
+  const totalTime = ROWS * timePerTile;
+  const scrollPercentage = currentTime / totalTime;
+  
+  const maxScroll = gameContainer.scrollHeight - gameContainer.clientHeight;
+  const targetScroll = maxScroll * (1 - scrollPercentage);
+  
+  gameContainer.scrollTop = targetScroll;
+}
+
+// Update audio time based on scroll position
+let scrollTimeout;
+gameContainer.addEventListener('scroll', () => {
+  if (isPlaying) return;
+  
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    const scrollTop = gameContainer.scrollTop;
+    const maxScroll = gameContainer.scrollHeight - gameContainer.clientHeight;
+    const scrollPercentage = scrollTop / maxScroll;
+    
+    const totalTime = (ROWS * timePerTile) / 1000;
+    const currentTime = totalTime * (1 - scrollPercentage);
+    
+    if (audioPlayer.src && !isNaN(currentTime)) {
+      audioPlayer.currentTime = Math.max(0, Math.min(currentTime, audioPlayer.duration));
+      updateTimeDisplay();
+    }
+  }, 100);
+});
 
 function setTileType(type){
   currentTileType = type;
@@ -142,13 +252,6 @@ function finalizeHold(startRow,endRow,col){
   renderTiles();
 }
 
-function resizeGrid(){
-  const songLength=parseFloat(document.getElementById('length').value)||10;
-  ROWS = Math.ceil((songLength*1000)/timePerTile);
-  tilesData=[];
-  createGrid();
-}
-
 function exportJSON(){
   const songName=document.getElementById('songName').value||'Unknown';
   const artist=document.getElementById('artist').value||'Unknown';
@@ -157,5 +260,17 @@ function exportJSON(){
   const sortedTiles = [...tilesData].sort((a,b)=>a.press-b.press);
   const tilesOutput = sortedTiles.map(t=>({type:t.type, press:t.press, slot:t.col+1, release:t.release}));
 
-  document.getElementById('jsonOutput').value = JSON.stringify({songName,artist,length,tiles:tilesOutput},null,2);
+  const jsonData = JSON.stringify({songName,artist,length,tiles:tilesOutput},null,2);
+  document.getElementById('jsonOutput').value = jsonData;
+  
+  // Download the JSON file
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${songName.replace(/[^a-z0-9]/gi, '_')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
