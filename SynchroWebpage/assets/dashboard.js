@@ -6,10 +6,11 @@ let arduinoConnected = false;
 let arduinoIP = "";
 let currentlyPlayingIndex = -1;
 let audioElements = new Map();
-let songTimers = new Map(); 
+let songTimers = new Map();
+let gameAudio = null;  // Audio element for game playback
 
 // Built-in song folders
-const builtInFolders = ["Last_Stardust", "Dispersion_Relation"];
+const builtInFolders = ["Last_Stardust", "Dispersion_Relation","Golden"];
 
 // ===============================
 // Cookie Management
@@ -202,6 +203,12 @@ function hideGameStatusPopup() {
   if (popup) {
     popup.style.display = 'none';
   }
+  
+  // Stop game audio
+  if (gameAudio) {
+    gameAudio.pause();
+    gameAudio = null;
+  }
 }
 
 function updateGameCountdown(secondsLeft) {
@@ -283,7 +290,7 @@ async function uploadFileToArduino(file, arduinoIP, progressCallback) {
     headers.append('Content-Type', 'application/octet-stream');
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 600000); // 3 min timeout
+    const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 min timeout
     
     const response = await fetch(`${arduinoIP}/upload`, {
       method: 'POST',
@@ -460,7 +467,7 @@ async function handleSongCardClick(song, songIndex) {
       console.log(`Song "${song.name}" found on Arduino`);
     }
     
-    updateLoadingOverlay('Starting game on Arduino...', null, 'Please wait...');
+    updateLoadingOverlay('Starting game on Arduino...', null, 'Synchronizing...');
     await startGameOnArduino(song, songIndex);
     
     hideLoadingOverlay();
@@ -473,7 +480,7 @@ async function handleSongCardClick(song, songIndex) {
 }
 
 // ===============================
-// Game Control
+// Game Control with Synchronized Audio
 // ===============================
 async function startGameOnArduino(song, songIndex) {
   if (!arduinoConnected) {
@@ -495,12 +502,31 @@ async function startGameOnArduino(song, songIndex) {
     const result = await res.json();
     console.log('Play response:', result);
     
-    console.log(`Game started on Arduino with song: ${song.name}`);
+    // Simple delay - just wait for countdown duration (3 seconds)
+    const countdownDuration = result.countdownDuration || 3000;
+    
+    console.log('Countdown duration:', countdownDuration, 'ms');
+    console.log('Audio will start in:', countdownDuration, 'ms');
+    
+    // Prepare audio
+    gameAudio = new Audio(song.audio);
+    gameAudio.volume = 0.7;
+    
+    // Preload audio
+    gameAudio.load();
     
     // Show game status popup
     showGameStatusPopup(song.name, song.artist, song.length);
     
-    // Track song completion with countdown + 10s buffer
+    // Wait for countdown duration, then start audio
+    setTimeout(() => {
+      console.log('Starting audio NOW');
+      gameAudio.play().catch(err => {
+        console.error('Failed to play audio:', err);
+      });
+    }, countdownDuration);
+    
+    // Track song completion with countdown + buffer
     trackSongCompletion(song, songIndex);
     
   } catch (err) {
@@ -511,20 +537,30 @@ async function startGameOnArduino(song, songIndex) {
 
 function trackSongCompletion(song, songIndex) {
   if (songTimers.has(songIndex)) {
-    clearTimeout(songTimers.get(songIndex));
+    const oldTimer = songTimers.get(songIndex);
+    if (oldTimer.timeout) clearTimeout(oldTimer.timeout);
+    if (oldTimer.interval) clearInterval(oldTimer.interval);
   }
 
-  // Add 10 second buffer after song length
-  const duration = (song.length || 180) + 10;
-  let timeLeft = duration;
+  // Use actual song length without buffer for display
+  const songDuration = song.length || 180;
+  // Add 15 second buffer for redirect to ensure song fully completes
+  const redirectDelay = songDuration + 15;
+  
+  let timeLeft = songDuration;
   
   // Update countdown every second
   const countdownInterval = setInterval(() => {
     timeLeft--;
-    updateGameCountdown(timeLeft);
+    updateGameCountdown(Math.max(0, timeLeft));
     
     if (timeLeft <= 0) {
       clearInterval(countdownInterval);
+      // Show "Processing results..." message
+      const countdownEl = document.getElementById('gameCountdown');
+      if (countdownEl) {
+        countdownEl.textContent = 'Processing...';
+      }
     }
   }, 1000);
   
@@ -541,9 +577,9 @@ function trackSongCompletion(song, songIndex) {
     
     hideGameStatusPopup();
     window.location.href = 'result.html?completed=true';
-  }, duration * 1000);
+  }, redirectDelay * 1000);
 
-  songTimers.set(songIndex, timer);
+  songTimers.set(songIndex, { timeout: timer, interval: countdownInterval });
 }
 
 // ===============================
@@ -580,6 +616,16 @@ async function loadBuiltInSongs() {
 
 async function loadArduinoSongs(arduinoSongList) {
   for (const folderName of arduinoSongList) {
+    // Filter out system folders and non-song folders
+    if (folderName === "System Volume Information" || 
+        folderName === ".Trash" || 
+        folderName === ".spotlight" ||
+        folderName === ".fseventsd" ||
+        folderName.startsWith(".")) {
+      console.log(`Skipping system folder: ${folderName}`);
+      continue;
+    }
+    
     if (songs.find(s => s.folderName === folderName)) {
       continue;
     }
@@ -899,6 +945,11 @@ window.addEventListener('beforeunload', () => {
   });
   
   songTimers.forEach(timer => {
-    clearTimeout(timer);
+    if (timer.timeout) clearTimeout(timer.timeout);
+    if (timer.interval) clearInterval(timer.interval);
   });
+  
+  if (gameAudio) {
+    gameAudio.pause();
+  }
 });

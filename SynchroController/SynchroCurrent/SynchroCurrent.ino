@@ -39,10 +39,11 @@ IPAddress subnet(255, 255, 255, 0);
 #define HIT_WINDOW 400  // +- 200ms hit window
 #define TILE_EXPIRE_TIME 1500  // Tiles expire 1.5s after their press time
 #define MAX_TILES 200
-#define COUNTDOWN_DURATION 3000  // 3 second countdown
+#define COUNTDOWN_DURATION 3000  // 3 second countdown (matches web exactly)
+#define GAME_END_WAIT 2000  // Wait 2s after last tile expires before ending
 // -------------------
 
-int state = 0;  // 0=menu, 1=countdown, 2=playing
+int state = 0;  // 0=menu, 1=countdown, 2=playing, 3=results
 bool buttonPressed[NUM_LANES] = {false, false, false, false};
 int buttonPins[NUM_LANES] = {button1, button2, button3, button4};
 float msToPixel = (float)SCREEN_W / (SCROLL_WINDOW + SCROLL_OFFSET);
@@ -52,6 +53,8 @@ unsigned long lastUpdate = 0;
 int laneWidth = SCREEN_W / NUM_LANES;
 int flickerMain = 0;
 bool sdCardAvailable = false;
+bool gameEnded = false;
+unsigned long gameEndTime = 0;
 
 // Current song info
 String currentSongName = "";
@@ -203,7 +206,7 @@ bool loadTilesFromJSON(const String& folderName) {
       tiles[tileIndex].press = pressStr.toInt();
     }
     
-    // Extract slot (lane)
+    // Extract slot (lane) - JSON uses 1-4, we use 0-3
     int slotPos = tileObj.indexOf("\"slot\"");
     if (slotPos != -1) {
       int colonPos = tileObj.indexOf(':', slotPos);
@@ -211,7 +214,7 @@ bool loadTilesFromJSON(const String& folderName) {
       if (commaPos == -1) commaPos = tileObj.indexOf('}', colonPos);
       String slotStr = tileObj.substring(colonPos + 1, commaPos);
       slotStr.trim();
-      tiles[tileIndex].lane = slotStr.toInt();
+      tiles[tileIndex].lane = slotStr.toInt() - 1;  // Convert from 1-4 to 0-3
     }
     
     tiles[tileIndex].active = true;
@@ -230,19 +233,64 @@ bool loadTilesFromJSON(const String& folderName) {
 }
 
 void cleanupExpiredTiles(int currentTime) {
-  for (int i = 0; i < MAX_TILES; i++) {
+  for (int i = 0; i < tileCount; i++) {  // Changed from MAX_TILES to tileCount
     // Remove hit tiles after 500ms
     if (tiles[i].hit && (millis() - tiles[i].hitTime) > 500) {
       tiles[i].hit = false;
       tiles[i].active = false;
     }
     
-    // Remove missed tiles
+    // Remove missed tiles that are past the hit window
     if (tiles[i].active && !tiles[i].hit && tiles[i].press < currentTime - TILE_EXPIRE_TIME) {
       tiles[i].active = false;
       miss += 1;
+      Serial.print("Tile missed - Lane: ");
+      Serial.print(tiles[i].lane);
+      Serial.print(" Time: ");
+      Serial.println(tiles[i].press);
     }
   }
+}
+
+// Check if game should end (all tiles processed and expired)
+bool checkGameEnd(int currentTime) {
+  // First check if we have any tiles at all
+  if (tileCount == 0) {
+    return false;
+  }
+  
+  // Check if all tiles are inactive (both active and hit must be false)
+  bool allInactive = true;
+  int lastTileTime = 0;
+  
+  for (int i = 0; i < tileCount; i++) {  // Changed from MAX_TILES to tileCount
+    if (tiles[i].active || tiles[i].hit) {
+      allInactive = false;
+    }
+    // Track the last tile's time
+    if (tiles[i].press > lastTileTime) {
+      lastTileTime = tiles[i].press;
+    }
+  }
+  
+  if (!allInactive) {
+    return false;  // Still have active or hit tiles
+  }
+  
+  // All tiles processed - check if we're past the last tile's time + wait period
+  if (lastTileTime > 0) {
+    // Game ends when current time is past last tile + expire time + extra wait
+    if (currentTime >= lastTileTime + TILE_EXPIRE_TIME + GAME_END_WAIT) {
+      Serial.println("Game end condition met!");
+      Serial.print("Current time: ");
+      Serial.println(currentTime);
+      Serial.print("Last tile time: ");
+      Serial.println(lastTileTime);
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 int timeToY(int tileTime, int currentTime) {
@@ -300,6 +348,74 @@ void drawGameFrame(int currentTime) {
   // Draw hit line near bottom
   int hitLineY = SCREEN_H - 30;
   spr.fillRect(0, hitLineY, SCREEN_W, 5, TFT_BLACK);
+
+  spr.pushSprite(0, 0);
+}
+
+void drawResultsScreen() {
+  spr.fillSprite(fixColor(TFT_BLACK));
+
+  // Title
+  spr.setTextSize(3);
+  spr.setTextColor(fixColor(TFT_YELLOW));
+  spr.setCursor(30, 20);
+  spr.print("Results!");
+
+  // Song info
+  spr.setTextSize(1);
+  spr.setTextColor(fixColor(TFT_WHITE));
+  spr.setCursor(10, 60);
+  spr.print(currentSongName);
+  spr.setCursor(10, 75);
+  spr.setTextColor(fixColor(TFT_CYAN));
+  spr.print(currentArtist);
+
+  // Calculate total and accuracy
+  int total = perfect + great + ok + miss;
+  int hits = perfect + great + ok;
+  float accuracy = total > 0 ? (float)hits / total * 100.0 : 0;
+
+  // Results
+  spr.setTextSize(2);
+  int yPos = 110;
+  
+  spr.setTextColor(fixColor(TFT_GREEN));
+  spr.setCursor(20, yPos);
+  spr.print("Perfect: ");
+  spr.print(perfect);
+  
+  yPos += 30;
+  spr.setTextColor(fixColor(TFT_CYAN));
+  spr.setCursor(20, yPos);
+  spr.print("Great: ");
+  spr.print(great);
+  
+  yPos += 30;
+  spr.setTextColor(fixColor(TFT_YELLOW));
+  spr.setCursor(20, yPos);
+  spr.print("OK: ");
+  spr.print(ok);
+  
+  yPos += 30;
+  spr.setTextColor(fixColor(TFT_RED));
+  spr.setCursor(20, yPos);
+  spr.print("Miss: ");
+  spr.print(miss);
+
+  // Accuracy
+  yPos += 40;
+  spr.setTextSize(2);
+  spr.setTextColor(fixColor(TFT_MAGENTA));
+  spr.setCursor(20, yPos);
+  spr.print("Accuracy: ");
+  spr.print(accuracy, 1);
+  spr.print("%");
+
+  // Instruction
+  spr.setTextSize(1);
+  spr.setTextColor(fixColor(TFT_WHITE));
+  spr.setCursor(30, 295);
+  spr.print("Press any button");
 
   spr.pushSprite(0, 0);
 }
@@ -423,20 +539,18 @@ bool initSDCard() {
   delay(100);
   
   bool sdOk = false;
-  const int frequencies[] = {10000000,4000000}; // Start slower: 400kHz, 1MHz, 4MHz, 10MHz
+  const int frequencies[] = {10000000, 4000000};
   
-  for (int i = 0; i < 4 && !sdOk; i++) {
+  for (int i = 0; i < 2 && !sdOk; i++) {
     Serial.print("\nAttempt ");
     Serial.print(i + 1);
     Serial.print(" with ");
     Serial.print(frequencies[i] / 1000);
     Serial.println("kHz...");
     
-    // Try with explicit SPI mode
     if (SD.begin(SD_CS, spiSD, frequencies[i], "/sd", 5, false)) {
-      delay(200); // Give SD time to settle
+      delay(200);
       
-      // Verify it's actually working by checking card size
       uint64_t totalBytes = SD.totalBytes();
       Serial.print("  Total bytes detected: ");
       Serial.println(totalBytes);
@@ -453,44 +567,28 @@ bool initSDCard() {
       }
     } else {
       Serial.println("✗ SD.begin() failed");
-      Serial.println("  Possible causes:");
-      Serial.println("  - Wiring issue (check connections)");
-      Serial.println("  - Wrong CS pin");
-      Serial.println("  - Card not inserted or damaged");
-      Serial.println("  - HSPI pins conflict with other hardware");
     }
     delay(500);
   }
   
-  // If still failed, try with default SPI (last resort diagnostic)
   if (!sdOk) {
     Serial.println("\n=== Diagnostic: Testing with default SPI ===");
-    Serial.println("This helps determine if issue is HSPI-specific or SD card itself");
     SD.end();
     delay(500);
     
     if (SD.begin(SD_CS, SPI, 1000000)) {
       Serial.println("✓ SD works on default SPI!");
       Serial.println("  Issue: HSPI pin configuration or conflict");
-      Serial.println("  Solution: Check HSPI pin definitions match your hardware");
       SD.end();
     } else {
       Serial.println("✗ SD also fails on default SPI");
       Serial.println("  Issue: SD card hardware or wiring problem");
-      Serial.println("  Solution: Check SD card, wiring, and CS pin");
     }
   }
   
   if (!sdOk) {
     Serial.println("\n!!! SD CARD INITIALIZATION FAILED !!!");
-    Serial.println("Troubleshooting steps:");
-    Serial.println("  1. Check SD card is inserted properly");
-    Serial.println("  2. Ensure SD card is FAT32 formatted (NOT exFAT)");
-    Serial.println("  3. Check write-protect switch is OFF");
-    Serial.println("  4. Try a different SD card (2GB-32GB works best)");
-    Serial.println("  5. Verify wiring: CS=" + String(SD_CS) + " SCK=" + String(SD_SCK) + " MISO=" + String(SD_MISO) + " MOSI=" + String(SD_MOSI));
-    Serial.println("  6. Format card with 'SD Card Formatter' tool");
-    Serial.println("\nContinuing without SD card (uploads will fail)...");
+    Serial.println("Continuing without SD card (uploads will fail)...");
     return false;
   }
   
@@ -502,91 +600,12 @@ bool initSDCard() {
   if (cardType == CARD_MMC) Serial.println("MMC");
   else if (cardType == CARD_SD) Serial.println("SDSC");
   else if (cardType == CARD_SDHC) Serial.println("SDHC");
-  else Serial.println("UNKNOWN (" + String(cardType) + ")");
+  else Serial.println("UNKNOWN");
   
   uint64_t cardSize = SD.cardSize() / (1024 * 1024);
   Serial.print("Card Size: ");
   Serial.print(cardSize);
   Serial.println(" MB");
-  
-  uint64_t totalBytes = SD.totalBytes() / (1024 * 1024);
-  uint64_t usedBytes = SD.usedBytes() / (1024 * 1024);
-  Serial.print("Total Space: ");
-  Serial.print(totalBytes);
-  Serial.println(" MB");
-  Serial.print("Used Space: ");
-  Serial.print(usedBytes);
-  Serial.println(" MB");
-  Serial.print("Free Space: ");
-  Serial.print(totalBytes - usedBytes);
-  Serial.println(" MB");
-  
-  // Test file operations
-  Serial.println("\n=== Testing File Operations ===");
-  
-  // Test write
-  Serial.print("Write test: ");
-  File testFile = SD.open("/test_write.txt", FILE_WRITE);
-  if (testFile) {
-    testFile.println("Test write successful at " + String(millis()));
-    testFile.close();
-    Serial.println("✓ PASSED");
-  } else {
-    Serial.println("✗ FAILED - Card may be write-protected");
-    return false;
-  }
-  
-  // Test read
-  Serial.print("Read test: ");
-  testFile = SD.open("/test_write.txt", FILE_READ);
-  if (testFile) {
-    String content = testFile.readString();
-    testFile.close();
-    Serial.println("✓ PASSED");
-  } else {
-    Serial.println("✗ FAILED");
-  }
-  
-  // Test delete
-  Serial.print("Delete test: ");
-  if (SD.remove("/test_write.txt")) {
-    Serial.println("✓ PASSED");
-  } else {
-    Serial.println("✗ FAILED");
-  }
-  
-  // Test directory creation
-  Serial.print("Directory creation test: ");
-  if (SD.mkdir("/test_dir")) {
-    Serial.println("✓ PASSED");
-    if (SD.rmdir("/test_dir")) {
-      Serial.println("  Directory cleanup: ✓ PASSED");
-    }
-  } else {
-    Serial.println("✗ FAILED - This will cause upload failures!");
-    Serial.println("  SOLUTION: Reformat SD card as FAT32");
-    return false;
-  }
-  
-  // List root directory
-  Serial.println("\n=== Root Directory Contents ===");
-  File root = SD.open("/");
-  if (root) {
-    while (true) {
-      File entry = root.openNextFile();
-      if (!entry) break;
-      Serial.print(entry.isDirectory() ? "[DIR]  " : "[FILE] ");
-      Serial.print(entry.name());
-      if (!entry.isDirectory()) {
-        Serial.print(" (");
-        Serial.print(entry.size());
-        Serial.print(" bytes)");
-      }
-      Serial.println();
-      entry.close();
-    }
-    root.close();
-  }
   
   Serial.println("=== SD Diagnostic Complete ===\n");
   return true;
@@ -616,7 +635,9 @@ void handleHandshake(WiFiClient& client) {
   client.print("{\"status\":\"Arduino ready\",\"sdAvailable\":");
   client.print(sdCardAvailable ? "true" : "false");
   client.print(",\"gameState\":");
-  client.print(state);  // 0=menu, 1=countdown, 2=playing
+  client.print(state);
+  client.print(",\"countdownDuration\":");
+  client.print(COUNTDOWN_DURATION);
   client.print(",\"songs\":[");
   
   if (sdCardAvailable) {
@@ -627,11 +648,18 @@ void handleHandshake(WiFiClient& client) {
       File entry = root.openNextFile();
       if (!entry) break;
       if (entry.isDirectory()) {
-        if (!first) client.print(",");
-        client.print("\"");
-        client.print(entry.name());
-        client.print("\"");
-        first = false;
+        String folderName = String(entry.name());
+        // Filter out system folders
+        if (folderName != "System Volume Information" && 
+            folderName != ".Trash" && 
+            folderName != ".spotlight" &&
+            !folderName.startsWith(".")) {
+          if (!first) client.print(",");
+          client.print("\"");
+          client.print(folderName);
+          client.print("\"");
+          first = false;
+        }
       }
       entry.close();
     }
@@ -676,6 +704,10 @@ void handlePlay(WiFiClient& client, String songFolder) {
   state = 1;
   countdownStartTime = millis();
   resetScore();
+  gameEnded = false;
+  
+  // Send response with exact countdown start time for synchronization
+  unsigned long responseTime = millis();
   
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: application/json");
@@ -688,10 +720,18 @@ void handlePlay(WiFiClient& client, String songFolder) {
   client.print(currentArtist);
   client.print("\",\"difficulty\":");
   client.print(currentDifficulty);
+  client.print(",\"countdownStartTime\":");
+  client.print(countdownStartTime);
+  client.print(",\"serverTime\":");
+  client.print(responseTime);
+  client.print(",\"countdownDuration\":");
+  client.print(COUNTDOWN_DURATION);
   client.println("}");
   client.flush();
   
   Serial.println("Game countdown started!");
+  Serial.print("Countdown will complete at: ");
+  Serial.println(countdownStartTime + COUNTDOWN_DURATION);
 }
 
 void handleGetResult(WiFiClient& client) {
@@ -703,26 +743,37 @@ void handleGetResult(WiFiClient& client) {
   client.println("Connection: close");
   client.println();
   
-  if (lastResultJSON == "{}") {
-    client.print("{\"songName\":\"");
-    client.print(currentSongName);
-    client.print("\",\"artist\":\"");
-    client.print(currentArtist);
-    client.print("\",\"difficulty\":");
-    client.print(currentDifficulty);
-    client.print(",\"result\":{\"miss\":");
-    client.print(miss);
-    client.print(",\"ok\":");
-    client.print(ok);
-    client.print(",\"great\":");
-    client.print(great);
-    client.print(",\"perfect\":");
-    client.print(perfect);
-    client.println("}}");
-  } else {
-    client.print(lastResultJSON);
-  }
+  // Calculate total and accuracy
+  int total = perfect + great + ok + miss;
+  int hits = perfect + great + ok;
+  float accuracy = total > 0 ? (float)hits / total * 100.0 : 0;
+  
+  client.print("{\"songName\":\"");
+  client.print(currentSongName);
+  client.print("\",\"artist\":\"");
+  client.print(currentArtist);
+  client.print("\",\"difficulty\":");
+  client.print(currentDifficulty);
+  client.print(",\"gameEnded\":");
+  client.print(gameEnded ? "true" : "false");
+  client.print(",\"result\":{\"miss\":");
+  client.print(miss);
+  client.print(",\"ok\":");
+  client.print(ok);
+  client.print(",\"great\":");
+  client.print(great);
+  client.print(",\"perfect\":");
+  client.print(perfect);
+  client.print(",\"total\":");
+  client.print(total);
+  client.print(",\"accuracy\":");
+  client.print(accuracy);
+  client.println("}}");
+  
   client.flush();
+
+  gameEnded = true;
+
 }
 
 void handleUpload(WiFiClient& client) {
@@ -745,7 +796,7 @@ void handleUpload(WiFiClient& client) {
 
   Serial.println("=== Upload Request Started ===");
 
-  // Read all headers until we find empty line
+  // Read all headers
   String headerBuffer = "";
   unsigned long headerTimeout = millis();
   
@@ -754,7 +805,6 @@ void handleUpload(WiFiClient& client) {
       char c = client.read();
       headerBuffer += c;
       
-      // Check if we've reached end of headers (double newline)
       if (headerBuffer.endsWith("\r\n\r\n") || headerBuffer.endsWith("\n\n")) {
         break;
       }
@@ -763,11 +813,7 @@ void handleUpload(WiFiClient& client) {
     }
   }
 
-  Serial.println("Raw headers received:");
-  Serial.println(headerBuffer);
-  Serial.println("--- End of headers ---");
-
-  // Parse headers from buffer
+  // Parse headers
   int lineStart = 0;
   int lineEnd = 0;
   
@@ -789,8 +835,6 @@ void handleUpload(WiFiClient& client) {
           lengthStr.trim();
           contentLength = lengthStr.toInt();
           hasContentLength = true;
-          Serial.print("Found Content-Length: ");
-          Serial.println(contentLength);
         }
       }
       
@@ -800,8 +844,6 @@ void handleUpload(WiFiClient& client) {
           filename = line.substring(colonPos + 1);
           filename.trim();
           hasFilename = true;
-          Serial.print("Found Filename: ");
-          Serial.println(filename);
         }
       }
     }
@@ -809,9 +851,6 @@ void handleUpload(WiFiClient& client) {
     lineStart = lineEnd + 1;
   }
 
-  Serial.println("=== Headers parsing complete ===");
-
-  // Validate filename
   if (!hasFilename || filename.length() == 0) {
     Serial.println("ERROR: Missing Filename header");
     client.println("HTTP/1.1 400 Bad Request");
@@ -824,7 +863,6 @@ void handleUpload(WiFiClient& client) {
     return;
   }
 
-  // Validate content length
   if (!hasContentLength || contentLength <= 0) {
     Serial.println("ERROR: Invalid or missing Content-Length");
     client.println("HTTP/1.1 400 Bad Request");
@@ -837,12 +875,10 @@ void handleUpload(WiFiClient& client) {
     return;
   }
 
-  // Add leading slash if missing
   if (!filename.startsWith("/")) {
     filename = "/" + filename;
   }
 
-  // Extract base name and extension
   int dotIndex = filename.lastIndexOf('.');
   if (dotIndex == -1) {
     Serial.println("ERROR: No file extension found");
@@ -869,63 +905,40 @@ void handleUpload(WiFiClient& client) {
     }
   }
   baseName = sanitized;
-  
-  Serial.print("Sanitized base name: ");
-  Serial.println(baseName);
-  Serial.print("Extension: ");
-  Serial.println(extension);
 
-  // Create folder with retry logic
+  // Create folder
   String folderPath = "/" + baseName;
   if (!SD.exists(folderPath)) {
-    Serial.print("Creating folder: ");
-    Serial.println(folderPath);
-    
     bool folderCreated = false;
     for (int attempt = 1; attempt <= 5; attempt++) {
       if (SD.mkdir(folderPath)) {
         folderCreated = true;
-        Serial.println("Folder created successfully");
-        delay(100); // Give SD time to update
+        delay(100);
         break;
-      } else {
-        Serial.print("Attempt ");
-        Serial.print(attempt);
-        Serial.println(" failed");
-        delay(200);
       }
+      delay(200);
     }
     
     if (!folderCreated) {
-      Serial.println("ERROR: Failed to create folder after 5 attempts");
+      Serial.println("ERROR: Failed to create folder");
       client.println("HTTP/1.1 500 Internal Server Error");
       client.println("Content-Type: application/json");
       client.println("Access-Control-Allow-Origin: *");
       client.println("Connection: close");
       client.println();
-      client.print("{\"error\":\"Failed to create folder. SD card may need reformatting as FAT32\",\"path\":\"");
-      client.print(folderPath);
-      client.println("\"}");
+      client.println("{\"error\":\"Failed to create folder\"}");
       client.flush();
       return;
     }
-  } else {
-    Serial.println("Folder already exists");
   }
 
-  // Full file path
   String fullPath = folderPath + "/" + baseName + extension;
-  Serial.print("Full path: ");
-  Serial.println(fullPath);
 
-  // Remove existing file
   if (SD.exists(fullPath)) {
-    Serial.println("Removing existing file...");
     SD.remove(fullPath);
     delay(100);
   }
 
-  // Open file for writing
   File f = SD.open(fullPath.c_str(), FILE_WRITE);
   if (!f) {
     Serial.println("ERROR: Failed to open file for writing");
@@ -939,11 +952,7 @@ void handleUpload(WiFiClient& client) {
     return;
   }
 
-  // Write data
   Serial.println("Writing file data...");
-  Serial.print("Expecting ");
-  Serial.print(contentLength);
-  Serial.println(" bytes");
   
   int bytesWritten = 0;
   int lastProgress = 0;
@@ -951,13 +960,11 @@ void handleUpload(WiFiClient& client) {
   unsigned long lastByteTime = millis();
   unsigned long lastFlush = millis();
   
-  // Use buffer for faster writes
   const int BUFFER_SIZE = 512;
   uint8_t buffer[BUFFER_SIZE];
   int bufferIndex = 0;
   
   while (bytesWritten < contentLength) {
-    // Check if client is still connected
     if (!client.connected()) {
       Serial.println("ERROR: Client disconnected during upload");
       f.close();
@@ -971,22 +978,18 @@ void handleUpload(WiFiClient& client) {
       bytesWritten++;
       lastByteTime = millis();
       
-      // Write buffer when full
       if (bufferIndex >= BUFFER_SIZE) {
         f.write(buffer, bufferIndex);
         bufferIndex = 0;
         
-        // Flush to SD periodically (every second)
         if (millis() - lastFlush > 1000) {
           f.flush();
           lastFlush = millis();
         }
       }
       
-      // Progress every 10%
       int progress = (bytesWritten * 100) / contentLength;
       if (progress >= lastProgress + 10) {
-        // Flush buffer and file at progress milestones
         if (bufferIndex > 0) {
           f.write(buffer, bufferIndex);
           bufferIndex = 0;
@@ -995,29 +998,13 @@ void handleUpload(WiFiClient& client) {
         
         Serial.print("Progress: ");
         Serial.print(progress);
-        Serial.print("% (");
-        Serial.print(bytesWritten);
-        Serial.print("/");
-        Serial.print(contentLength);
-        Serial.print(") - ");
-        Serial.print((millis() - writeStartTime) / 1000);
-        Serial.println("s elapsed");
+        Serial.println("%");
         lastProgress = progress;
       }
     } else {
-      // Timeout after 30 seconds with no data
       unsigned long timeSinceLastByte = millis() - lastByteTime;
       if (timeSinceLastByte > 30000) {
-        Serial.print("ERROR: Timeout waiting for data (");
-        Serial.print(timeSinceLastByte / 1000);
-        Serial.println("s with no data)");
-        Serial.print("Received ");
-        Serial.print(bytesWritten);
-        Serial.print(" of ");
-        Serial.print(contentLength);
-        Serial.println(" bytes");
-        
-        // Write remaining buffer before closing
+        Serial.println("ERROR: Timeout");
         if (bufferIndex > 0) {
           f.write(buffer, bufferIndex);
         }
@@ -1035,7 +1022,6 @@ void handleUpload(WiFiClient& client) {
     }
   }
   
-  // Write any remaining buffered data
   if (bufferIndex > 0) {
     f.write(buffer, bufferIndex);
   }
@@ -1049,23 +1035,6 @@ void handleUpload(WiFiClient& client) {
   Serial.print(uploadTime);
   Serial.println("ms");
 
-  // Verify file
-  if (SD.exists(fullPath)) {
-    File verify = SD.open(fullPath, FILE_READ);
-    int fileSize = verify.size();
-    verify.close();
-    
-    Serial.print("Verified file size: ");
-    Serial.println(fileSize);
-    
-    if (fileSize == contentLength) {
-      Serial.println("SUCCESS: File size matches!");
-    } else {
-      Serial.println("WARNING: File size mismatch!");
-    }
-  }
-
-  // Send response
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: application/json");
   client.println("Access-Control-Allow-Origin: *");
@@ -1075,9 +1044,7 @@ void handleUpload(WiFiClient& client) {
   client.print(filename);
   client.print("\",\"size\":");
   client.print(bytesWritten);
-  client.print(",\"path\":\"");
-  client.print(fullPath);
-  client.println("\"}");
+  client.println("}");
   client.flush();
   
   Serial.println("=== Upload Request Complete ===");
@@ -1089,8 +1056,7 @@ void handleClient() {
 
   Serial.println("Client connected!");
   
-  // Set longer timeout for large file uploads
-  client.setTimeout(600000); // 60 second timeout
+  client.setTimeout(600000);  // 600 second timeout for large files
 
   unsigned long timeout = millis();
   while (client.connected() && !client.available()) {
@@ -1120,7 +1086,6 @@ void handleClient() {
     } else if (req.indexOf("GET /play") >= 0 || req.indexOf("POST /play") >= 0) {
       Serial.println("Handling play request");
       
-      // Extract song parameter from URL
       int songParamPos = req.indexOf("song=");
       String songFolder = "";
       if (songParamPos != -1) {
@@ -1132,7 +1097,6 @@ void handleClient() {
         }
         songFolder = req.substring(songParamPos + 5, endPos);
         
-        // URL decode
         songFolder.replace("%20", " ");
         songFolder.replace("+", " ");
       }
@@ -1221,6 +1185,15 @@ void checkButtonPress(int lane, int currentTime) {
     Serial.println("MISS - No tile in hit window");
     miss += 1;
   }
+}
+
+bool checkAnyButtonPressed() {
+  for (int i = 0; i < NUM_LANES; i++) {
+    if (digitalRead(buttonPins[i]) == HIGH) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool checkSceneChange() {
@@ -1321,33 +1294,30 @@ void setup() {
   Serial.begin(9600);
   delay(2000);
   
-  Serial.println("\n=== Synchro Rhythm Game - Separate SPI Bus Version ===");
+  Serial.println("\n=== Synchro Rhythm Game - Web Audio Version ===");
   
-  // Initialize buttons
   for (int i = 0; i < NUM_LANES; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
 
-  // Initialize display FIRST (uses default VSPI)
   Serial.println("Initializing TFT display on VSPI...");
   initDisplay();
   
-  // Initialize SD card on separate HSPI bus
   Serial.println("Initializing SD card on HSPI...");
   sdCardAvailable = initSDCard();
   
-  // Initialize WiFi
   Serial.println("Initializing WiFi...");
   initWiFi();
   
-  // Disable WiFi sleep for better stability during uploads
   WiFi.setSleep(false);
 
   drawMainScreen();
   startTime = millis();
   lastUpdate = millis();
   
-  Serial.println("=== Setup Complete ===\n");
+  Serial.println("=== Setup Complete ===");
+  Serial.println("Audio will be played from web browser");
+  Serial.println();
 }
 
 ///////////////////// Main Loop /////////////////////
@@ -1355,7 +1325,6 @@ void setup() {
 void updateMainMenu() {
   unsigned long now = millis();
 
-  // Update flicker animation
   if (now - lastUpdate >= FLICKER_INTERVAL) {
     lastUpdate = now;
     drawMainScreen();
@@ -1367,15 +1336,15 @@ void updateCountdown() {
   unsigned long elapsed = now - countdownStartTime;
   
   if (elapsed >= COUNTDOWN_DURATION) {
-    // Countdown finished, start game
     state = 2;
     startTime = millis();
     lastUpdate = millis();
     Serial.println("Game started!");
+    Serial.print("Game start time: ");
+    Serial.println(startTime);
     return;
   }
   
-  // Update countdown display every 100ms
   if (now - lastUpdate >= 100) {
     lastUpdate = now;
     int secondsLeft = 3 - (elapsed / 1000);
@@ -1388,36 +1357,61 @@ void updateGamePlay() {
   unsigned long now = millis();
   int currentTime = now - startTime;
 
+  // Check for manual exit (all buttons pressed)
   if (checkSceneChange()) {
     state = 0;
     drawMainScreen();
     Serial.println("Returned to menu");
     setGameResult(currentSongName, currentArtist, currentDifficulty, miss, ok, great, perfect);
-    delay(200);  // Debounce
+    gameEnded = true;
+    delay(200);
     return;
   }
 
-  // Check button presses for all lanes (skip button check during scene change detection)
+  // Check button presses
   bool button1State = (digitalRead(buttonPins[0]) == HIGH);
   bool button2State = (digitalRead(buttonPins[1]) == HIGH);
   bool button3State = (digitalRead(buttonPins[2]) == HIGH);
   bool button4State = (digitalRead(buttonPins[3]) == HIGH);
   
-  // Only check individual button presses if not doing scene change combo
   if (!(button1State && button2State && button3State && button4State)) {
     for (int i = 0; i < NUM_LANES; i++) {
       checkButtonPress(i, currentTime);
     }
   }
 
-  // Cleanup expired tiles
   cleanupExpiredTiles(currentTime);
 
-  // Update game frame
+  // Check if game should end naturally
+  if (!gameEnded && checkGameEnd(currentTime)) {
+    Serial.println("Game ended - all tiles processed!");
+    gameEnded = true;
+    gameEndTime = millis();
+    state = 3;  // Switch to results state
+    setGameResult(currentSongName, currentArtist, currentDifficulty, miss, ok, great, perfect);
+    drawResultsScreen();
+  }
+
   if (now - lastUpdate >= UPDATE_INTERVAL) {
     lastUpdate = now;
     drawGameFrame(currentTime);
   }
+}
+
+void updateResults() {
+  // Wait for any button press to return to menu
+  static bool wasPressed = false;
+  bool isPressed = checkAnyButtonPressed();
+  
+  if (isPressed && !wasPressed) {
+    // Button just pressed, return to menu
+    state = 0;
+    drawMainScreen();
+    Serial.println("Returned to menu from results");
+    delay(200);  // Debounce
+  }
+  
+  wasPressed = isPressed;
 }
 
 void loop() {
@@ -1430,5 +1424,7 @@ void loop() {
     updateCountdown();
   } else if (state == 2) {
     updateGamePlay();
+  } else if (state == 3) {
+    updateResults();
   }
 }
