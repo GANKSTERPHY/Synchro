@@ -670,6 +670,7 @@ void handleUpload(WiFiClient& client) {
   }
 
   if (bufferIndex > 0) f.write(buffer, bufferIndex);
+  f.flush();  
   f.close();
 
   client.println("HTTP/1.1 200 OK");
