@@ -19,7 +19,7 @@
 
 ## Poster
 
-![Synchro poster](/SynchronPoster.png)
+![Synchro poster](/SYNCHROPoster.png)
 
 ---
 
