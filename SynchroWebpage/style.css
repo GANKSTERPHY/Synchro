@@ -100,10 +100,11 @@ body {
 
 .hero {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center; 
     align-items: center;
     height: 100vh;
-    padding-right: 1%;
+    gap: 40px; 
+    padding-right: 0; 
 }
 
 .text-box {
@@ -111,7 +112,6 @@ body {
     background: rgba(0, 0, 0, 0.45);
     border-radius: 20px;
     padding: 40px;
-    transform: translateX(-40%);
 }
 
 .text-box h1 {
@@ -139,6 +139,23 @@ body {
     line-height: 1.8;
     margin-bottom: 30px;
 }
+
+.img-box {
+  width: 350px;  
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-box img {
+  width: 350px;  
+  height: 350px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
 
 .btn {
     background: linear-gradient(90deg, #5a00ff, #a800ff);
