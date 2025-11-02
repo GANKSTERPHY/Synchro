@@ -781,14 +781,6 @@ bool checkAnyButtonPressed() {
   return false;
 }
 
-bool checkSceneChange() {
-  bool b0 = (digitalRead(buttonPins[0]) == HIGH);
-  bool b1 = (digitalRead(buttonPins[1]) == HIGH);
-  bool b2 = (digitalRead(buttonPins[2]) == HIGH);
-  bool b3 = (digitalRead(buttonPins[3]) == HIGH);
-  return b0 && b1 && b2 && b3;
-}
-
 ///////////////////// Result /////////////////////
 
 void resetScore() { miss = ok = great = perfect = 0; }
@@ -889,21 +881,8 @@ void updateGamePlay() {
   unsigned long now = millis();
   int currentTime = now - startTime;
 
-  if (checkSceneChange()) {
-    state = 0;
-    drawMainScreen();
-    setGameResult(currentSongName, currentArtist, currentDifficulty, miss, ok, great, perfect);
-    gameEnded = true;
-    delay(200);
-    return;
-  }
-
-  bool b0 = (digitalRead(buttonPins[0]) == HIGH);
-  bool b1 = (digitalRead(buttonPins[1]) == HIGH);
-  bool b2 = (digitalRead(buttonPins[2]) == HIGH);
-  bool b3 = (digitalRead(buttonPins[3]) == HIGH);
-  if (!(b0 && b1 && b2 && b3)) {
-    for (int i = 0; i < NUM_LANES; i++) checkButtonPress(i, currentTime);
+  for (int i = 0; i < NUM_LANES; i++) {
+    checkButtonPress(i, currentTime);
   }
 
   cleanupExpiredTiles(currentTime);
