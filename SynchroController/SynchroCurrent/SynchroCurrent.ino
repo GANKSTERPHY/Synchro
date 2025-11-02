@@ -32,7 +32,7 @@ SPIClass spiSD(HSPI);
 #define SCROLL_WINDOW 2000
 #define SCROLL_OFFSET 100
 #define FLICKER_INTERVAL 1000
-#define WIFI_CHECK_INTERVAL 25000
+#define WIFI_CHECK_INTERVAL 100000
 #define HIT_WINDOW 400
 #define TILE_EXPIRE_TIME 1500
 #define MAX_TILES 200
@@ -320,6 +320,38 @@ void drawCountdownScreen(int secondsLeft) {
   int textWidth = countText.length() * 48;
   spr.setCursor((SCREEN_W - textWidth) / 2, 150);
   spr.print(countText);
+  spr.pushSprite(0, 0);
+}
+
+void drawWiFiScreen(bool connecting) {
+  spr.fillSprite(fixColor(TFT_BLACK));
+
+  // Draw title "Synchro" with shadow effect
+  spr.setTextSize(4);
+  spr.setTextColor(fixColor(TFT_MAGENTA));
+  spr.setCursor(42, 53);
+  spr.print("Synchro");
+  spr.setTextColor(fixColor(TFT_WHITE));
+  spr.setCursor(40, 50);
+  spr.print("Synchro");
+
+  // Draw WiFi status text
+  spr.setTextSize(2);
+  spr.setTextColor(fixColor(TFT_WHITE));
+  if (connecting) {
+    spr.setCursor(15, 200);
+    spr.print("Connecting WiFi");
+    // Add dots animation
+    int dots = (millis() / 500) % 4;
+    spr.setCursor(195, 200);
+    for (int i = 0; i < dots; i++) {
+      spr.print(".");
+    }
+  } else {
+    spr.setCursor(35, 200);
+    spr.print("WiFi Connected!");
+  }
+
   spr.pushSprite(0, 0);
 }
 
@@ -809,30 +841,50 @@ void initDisplay() {
 }
 
 void initWiFi() {
-  // simple splash
-  spr.fillSprite(fixColor(TFT_BLACK));
-  spr.setTextSize(4);
-  spr.setTextColor(fixColor(TFT_WHITE));
-  spr.setCursor(50, 110); spr.print("WiFi...");
-  spr.pushSprite(0, 0);
-
+  drawWiFiScreen(true);
+  
   WiFi.begin(ssid, password);
-  unsigned long t0 = millis();
+  Serial.print("Connecting to WiFi");
+  
+  unsigned long wifiStartTime = millis();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    if (millis() - t0 > 30000) {
+    Serial.print(".");
+    
+    drawWiFiScreen(true);
+    
+    if (millis() - wifiStartTime > 30000) {
+      Serial.println("\nWiFi connection timeout!");
       spr.fillSprite(fixColor(TFT_BLACK));
       spr.setTextSize(2);
       spr.setTextColor(fixColor(TFT_RED));
-      spr.setCursor(20, 120); spr.print("WiFi Failed!");
+      spr.setCursor(20, 120);
+      spr.print("WiFi Failed!");
       spr.pushSprite(0, 0);
-      delay(1200);
+      delay(3000);
       return;
     }
   }
+  
+  Serial.println();
+  Serial.print("Connected. IP: ");
+  Serial.println(WiFi.localIP());
+
+  drawWiFiScreen(false);
+  delay(1000);
 
   server.begin();
-  if (!MDNS.begin("synchro")) { /* ignore */ }
+  Serial.println("Server started.");
+  Serial.print("Listening on: http://");
+  Serial.print(WiFi.localIP());
+  Serial.println(":80");
+
+  if (MDNS.begin("synchro")) {
+    Serial.println("mDNS responder started!");
+    Serial.println("Access at: http://synchro.local/handshake");
+  } else {
+    Serial.println("Error starting mDNS");
+  }
 }
 
 void setup() {
