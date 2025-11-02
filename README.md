@@ -7,7 +7,7 @@
 
 ## Links
 - [Webpage Synchro game](https://ganksterphy.github.io/Synchro/)
-- [Video present Synchro game](https://youtube.com)
+- [Video present Synchro game](https://youtu.be/TF4fjew09xc)
 
 ---
 
