@@ -16,14 +16,18 @@ const int button3 = 27;  // Lane 2
 const int button4 = 14;  // Lane 3
 const char* ssid = "Guh";
 const char* password = "Nuhuhwhysolong";
-#define SD_SCK   27
-#define SD_MISO  12
+
+// SD Card on HSPI (separate bus from TFT)
+#define SD_SCK   32
+#define SD_MISO  19
 #define SD_MOSI  13
-#define SD_CS    15
+#define SD_CS    4
 SPIClass spiSD(HSPI);
+
 IPAddress local_IP(192, 168, 1, 177);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
+
 #define SCREEN_W 240
 #define SCREEN_H 320
 #define NUM_LANES 4
@@ -47,8 +51,7 @@ unsigned long countdownStartTime = 0;
 unsigned long lastUpdate = 0;
 int laneWidth = SCREEN_W / NUM_LANES;
 int flickerMain = 0;
-bool sdCardAvailable = false;  // Track if SD card is working
-bool gameReadyToStart = false;  // Flag for web to trigger game
+bool sdCardAvailable = false;
 
 // Current song info
 String currentSongName = "";
@@ -67,7 +70,6 @@ struct Tile {
 
 Tile tiles[MAX_TILES];
 int tileCount = 0;
-int nextTileIndex = 0;
 
 // Store last game result
 int miss = 0;
@@ -104,22 +106,6 @@ bool loadTilesFromJSON(const String& folderName) {
     return false;
   }
   
-  // COMPLETELY release TFT control of SPI
-  spr.deleteSprite();
-  delay(100);
-  
-  // Re-initialize SD for reading
-  digitalWrite(SD_CS, LOW);
-  delay(50);
-  
-  delay(50);
-  if (!SD.begin(SD_CS, SPI, 4000000)) {
-    Serial.println("Failed to re-init SD for reading");
-    // Recreate sprite before returning
-    spr.createSprite(SCREEN_W, SCREEN_H);
-    return false;
-  }
-  
   String jsonPath = "/" + folderName + "/" + folderName + ".json";
   Serial.print("Loading tiles from: ");
   Serial.println(jsonPath);
@@ -127,11 +113,6 @@ bool loadTilesFromJSON(const String& folderName) {
   File file = SD.open(jsonPath, FILE_READ);
   if (!file) {
     Serial.println("Failed to open JSON file");
-    digitalWrite(SD_CS, HIGH);  // Release SD CS
-    
-    delay(50);
-    // Recreate sprite before returning
-    spr.createSprite(SCREEN_W, SCREEN_H);
     return false;
   }
   
@@ -141,16 +122,6 @@ bool loadTilesFromJSON(const String& folderName) {
     jsonContent += (char)file.read();
   }
   file.close();
-  
-  // COMPLETELY shut down SD and release SPI
-  
-  digitalWrite(SD_CS, HIGH);  // Release SD CS for TFT
-  delay(100);
-  
-  // Reinit TFT
-  tft.init();
-  spr.createSprite(SCREEN_W, SCREEN_H);
-  spr.setColorDepth(8);
   
   Serial.println("JSON content loaded, parsing...");
   
@@ -421,36 +392,49 @@ void drawWiFiScreen(bool connecting) {
 ///////////////////// SD Card Functions /////////////////////
 
 bool initSDCard() {
-  Serial.println("\n=== Starting SD Card Initialization ===");
+  Serial.println("\n=== Starting SD Card Initialization (Separate SPI Bus) ===");
+  Serial.println("Pin Configuration:");
+  Serial.print("  SD_CS:   GPIO ");
+  Serial.println(SD_CS);
+  Serial.print("  SD_SCK:  GPIO ");
+  Serial.println(SD_SCK);
+  Serial.print("  SD_MISO: GPIO ");
+  Serial.println(SD_MISO);
+  Serial.print("  SD_MOSI: GPIO ");
+  Serial.println(SD_MOSI);
   
-  // Set CS pin as output BEFORE SD.begin()
+  // Set CS pin as output and high (deselected)
   pinMode(SD_CS, OUTPUT);
-  digitalWrite(SD_CS, LOW);
-  
-  // Give TFT time to finish any SPI operations
+  digitalWrite(SD_CS, HIGH);
   delay(100);
   
-  // End any existing SD operations
+  // Initialize HSPI bus with explicit pins
+  Serial.println("\nInitializing HSPI bus...");
+  spiSD.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
   
-  delay(500);
+  // Try toggling CS to wake up SD card
+  Serial.println("Toggling CS pin...");
+  for (int i = 0; i < 10; i++) {
+    digitalWrite(SD_CS, LOW);
+    delayMicroseconds(10);
+    digitalWrite(SD_CS, HIGH);
+    delayMicroseconds(10);
+  }
+  delay(100);
   
-  // Try multiple initialization attempts with different speeds
   bool sdOk = false;
-  const int frequencies[] = {4000000, 10000000, 25000000}; // 4MHz, 10MHz, 25MHz
+  const int frequencies[] = {10000000,4000000}; // Start slower: 400kHz, 1MHz, 4MHz, 10MHz
   
-  for (int i = 0; i < 3 && !sdOk; i++) {
-    Serial.print("Attempt ");
+  for (int i = 0; i < 4 && !sdOk; i++) {
+    Serial.print("\nAttempt ");
     Serial.print(i + 1);
     Serial.print(" with ");
-    Serial.print(frequencies[i] / 1000000);
-    Serial.println("MHz...");
+    Serial.print(frequencies[i] / 1000);
+    Serial.println("kHz...");
     
-    // Ensure CS is high before attempting
-    digitalWrite(SD_CS, LOW);
-    delay(10);
-    
-    if (SD.begin(SD_CS, spiSD, frequencies[i])) {
-      delay(100); // Give SD time to settle
+    // Try with explicit SPI mode
+    if (SD.begin(SD_CS, spiSD, frequencies[i], "/sd", 5, false)) {
+      delay(200); // Give SD time to settle
       
       // Verify it's actually working by checking card size
       uint64_t totalBytes = SD.totalBytes();
@@ -459,16 +443,42 @@ bool initSDCard() {
       
       if (totalBytes > 0) {
         sdOk = true;
-        Serial.println("✓ SD initialized successfully!");
+        Serial.println("✓ SD initialized successfully at ");
+        Serial.print(frequencies[i] / 1000);
+        Serial.println("kHz!");
         break;
       } else {
         Serial.println("✗ SD mounted but card size is 0 (not formatted or bad card)");
-        
+        SD.end();
       }
     } else {
       Serial.println("✗ SD.begin() failed");
+      Serial.println("  Possible causes:");
+      Serial.println("  - Wiring issue (check connections)");
+      Serial.println("  - Wrong CS pin");
+      Serial.println("  - Card not inserted or damaged");
+      Serial.println("  - HSPI pins conflict with other hardware");
     }
     delay(500);
+  }
+  
+  // If still failed, try with default SPI (last resort diagnostic)
+  if (!sdOk) {
+    Serial.println("\n=== Diagnostic: Testing with default SPI ===");
+    Serial.println("This helps determine if issue is HSPI-specific or SD card itself");
+    SD.end();
+    delay(500);
+    
+    if (SD.begin(SD_CS, SPI, 1000000)) {
+      Serial.println("✓ SD works on default SPI!");
+      Serial.println("  Issue: HSPI pin configuration or conflict");
+      Serial.println("  Solution: Check HSPI pin definitions match your hardware");
+      SD.end();
+    } else {
+      Serial.println("✗ SD also fails on default SPI");
+      Serial.println("  Issue: SD card hardware or wiring problem");
+      Serial.println("  Solution: Check SD card, wiring, and CS pin");
+    }
   }
   
   if (!sdOk) {
@@ -478,14 +488,13 @@ bool initSDCard() {
     Serial.println("  2. Ensure SD card is FAT32 formatted (NOT exFAT)");
     Serial.println("  3. Check write-protect switch is OFF");
     Serial.println("  4. Try a different SD card (2GB-32GB works best)");
-    Serial.println("  5. Verify wiring: CS=" + String(SD_CS));
+    Serial.println("  5. Verify wiring: CS=" + String(SD_CS) + " SCK=" + String(SD_SCK) + " MISO=" + String(SD_MISO) + " MOSI=" + String(SD_MOSI));
     Serial.println("  6. Format card with 'SD Card Formatter' tool");
-    Serial.println("  7. TFT may be interfering - this is being handled");
     Serial.println("\nContinuing without SD card (uploads will fail)...");
     return false;
   }
   
-  // Run diagnostic only if SD is working
+  // Run diagnostic
   Serial.println("\n=== SD Card Diagnostic ===");
   uint8_t cardType = SD.cardType();
   
@@ -596,9 +605,6 @@ void handleCORSPreflight(WiFiClient& client) {
 }
 
 void handleHandshake(WiFiClient& client) {
-  // Pause TFT operations during SD access
-  spr.deleteSprite();
-  
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: application/json");
   client.println("Access-Control-Allow-Origin: *");
@@ -614,12 +620,6 @@ void handleHandshake(WiFiClient& client) {
   client.print(",\"songs\":[");
   
   if (sdCardAvailable) {
-    digitalWrite(SD_CS, LOW);
-    delay(10);
-    
-    delay(50);
-    SD.begin(SD_CS, SPI, 4000000);
-    
     File root = SD.open("/");
     bool first = true;
 
@@ -636,23 +636,12 @@ void handleHandshake(WiFiClient& client) {
       entry.close();
     }
     root.close();
-    
-    // Completely shut down SD
-    
-    digitalWrite(SD_CS, HIGH);  // Release for TFT
-    delay(50);
   }
   
   client.println("]}");
-  
-  // Reinit TFT
-  tft.init();
-  spr.createSprite(SCREEN_W, SCREEN_H);
-  spr.setColorDepth(8);
 }
 
 void handlePlay(WiFiClient& client, String songFolder) {
-  // Extract song folder from URL parameter
   songFolder.trim();
   
   if (songFolder.length() == 0) {
@@ -748,17 +737,11 @@ void handleUpload(WiFiClient& client) {
     client.flush();
     return;
   }
-  
-  // DELETE SPRITE before SD operations
-  spr.deleteSprite();
-  delay(100);
 
   String filename = "";
   int contentLength = 0;
   bool hasContentLength = false;
   bool hasFilename = false;
-
-  digitalWrite(5,1);
 
   Serial.println("=== Upload Request Started ===");
 
@@ -892,24 +875,6 @@ void handleUpload(WiFiClient& client) {
   Serial.print("Extension: ");
   Serial.println(extension);
 
-  // REINITIALIZE SD CARD BEFORE FOLDER OPERATIONS (Critical for shared SPI)
-  Serial.println("Re-initializing SD card for file operations...");
-  
-  delay(50);
-  if (!SD.begin(SD_CS, SPI, 4000000)) {  // Use slower 4MHz for reliability during write
-    Serial.println("ERROR: Failed to re-init SD card");
-    client.println("HTTP/1.1 500 Internal Server Error");
-    client.println("Content-Type: application/json");
-    client.println("Access-Control-Allow-Origin: *");
-    client.println("Connection: close");
-    client.println();
-    client.println("{\"error\":\"SD card re-initialization failed\"}");
-    client.flush();
-    digitalWrite(5, 0);
-    return;
-  }
-  Serial.println("SD card re-initialized successfully");
-
   // Create folder with retry logic
   String folderPath = "/" + baseName;
   if (!SD.exists(folderPath)) {
@@ -933,7 +898,6 @@ void handleUpload(WiFiClient& client) {
     
     if (!folderCreated) {
       Serial.println("ERROR: Failed to create folder after 5 attempts");
-      
       client.println("HTTP/1.1 500 Internal Server Error");
       client.println("Content-Type: application/json");
       client.println("Access-Control-Allow-Origin: *");
@@ -943,7 +907,6 @@ void handleUpload(WiFiClient& client) {
       client.print(folderPath);
       client.println("\"}");
       client.flush();
-      digitalWrite(5, 0);
       return;
     }
   } else {
@@ -973,7 +936,6 @@ void handleUpload(WiFiClient& client) {
     client.println();
     client.println("Error: Failed to create file on SD card");
     client.flush();
-    digitalWrite(5, 0);
     return;
   }
 
@@ -1000,7 +962,6 @@ void handleUpload(WiFiClient& client) {
       Serial.println("ERROR: Client disconnected during upload");
       f.close();
       SD.remove(fullPath);
-      digitalWrite(5, 0);
       return;
     }
     
@@ -1015,7 +976,7 @@ void handleUpload(WiFiClient& client) {
         f.write(buffer, bufferIndex);
         bufferIndex = 0;
         
-        // Flush to SD periodically (every 50KB)
+        // Flush to SD periodically (every second)
         if (millis() - lastFlush > 1000) {
           f.flush();
           lastFlush = millis();
@@ -1044,7 +1005,7 @@ void handleUpload(WiFiClient& client) {
         lastProgress = progress;
       }
     } else {
-      // Increased timeout to 30 seconds for large files
+      // Timeout after 30 seconds with no data
       unsigned long timeSinceLastByte = millis() - lastByteTime;
       if (timeSinceLastByte > 30000) {
         Serial.print("ERROR: Timeout waiting for data (");
@@ -1068,7 +1029,6 @@ void handleUpload(WiFiClient& client) {
         client.println("Connection: close");
         client.println();
         client.flush();
-        digitalWrite(5, 0);
         return;
       }
       delay(1);
@@ -1081,7 +1041,6 @@ void handleUpload(WiFiClient& client) {
   }
   
   f.close();
-  digitalWrite(SD_CS, HIGH);  // Release SD CS for TFT
   
   unsigned long uploadTime = millis() - writeStartTime;
   Serial.print("Upload complete! ");
@@ -1090,11 +1049,7 @@ void handleUpload(WiFiClient& client) {
   Serial.print(uploadTime);
   Serial.println("ms");
 
-  // Verify
-  
-  delay(50);
-  SD.begin(SD_CS, SPI, 4000000);
-  
+  // Verify file
   if (SD.exists(fullPath)) {
     File verify = SD.open(fullPath, FILE_READ);
     int fileSize = verify.size();
@@ -1109,8 +1064,6 @@ void handleUpload(WiFiClient& client) {
       Serial.println("WARNING: File size mismatch!");
     }
   }
-  
-  digitalWrite(SD_CS, HIGH);  // Final release for TFT
 
   // Send response
   client.println("HTTP/1.1 200 OK");
@@ -1128,14 +1081,6 @@ void handleUpload(WiFiClient& client) {
   client.flush();
   
   Serial.println("=== Upload Request Complete ===");
-  digitalWrite(5,0);
-  
-  // REINIT TFT after upload
-  delay(100);
-  tft.init();
-  spr.createSprite(SCREEN_W, SCREEN_H);
-  spr.setColorDepth(8);
-  Serial.println("TFT reinitialized after upload");
 }
 
 void handleClient() {
@@ -1219,7 +1164,6 @@ void handleClient() {
   delay(10);
   client.stop();
   Serial.println("Client disconnected");
-  
 }
 
 void checkWiFiStatus() {
@@ -1251,11 +1195,11 @@ void checkButtonPress(int lane, int currentTime) {
     // Check for tiles in hit window
     for (int i = 0; i < MAX_TILES; i++) {
       if (tiles[i].active && !tiles[i].hit && tiles[i].lane == lane) {
-        int timeDiff = tiles[i].press - (currentTime+SCROLL_OFFSET);
+        int timeDiff = tiles[i].press - (currentTime + SCROLL_OFFSET);
         if (abs(timeDiff) <= HIT_WINDOW) {
           tiles[i].active = false;
           tiles[i].hit = true;
-          tiles[i].hitY = SCREEN_H - (int)((tiles[i].press - currentTime + SCROLL_OFFSET+100) * msToPixel);
+          tiles[i].hitY = SCREEN_H - (int)((tiles[i].press - currentTime + SCROLL_OFFSET + 100) * msToPixel);
           tiles[i].hitTime = millis();
           Serial.print("HIT! Tile deleted - Lane: ");
           Serial.print(lane);
@@ -1263,11 +1207,11 @@ void checkButtonPress(int lane, int currentTime) {
           Serial.print(tiles[i].press);
           Serial.print(" Time diff: ");
           Serial.println(timeDiff);
-          if (abs(timeDiff) < 50){
-            perfect +=1;
-          }else if (abs(timeDiff) < 150){
+          if (abs(timeDiff) < 50) {
+            perfect += 1;
+          } else if (abs(timeDiff) < 150) {
             great += 1;
-          }else{
+          } else {
             ok += 1;
           }
           return;
@@ -1289,7 +1233,7 @@ bool checkSceneChange() {
 
 ///////////////////// Result ////////////////////
 
-void resetScore(){
+void resetScore() {
   miss = 0;
   ok = 0;
   great = 0;
@@ -1375,18 +1319,25 @@ void initWiFi() {
 
 void setup() {
   Serial.begin(9600);
+  delay(2000);
+  
+  Serial.println("\n=== Synchro Rhythm Game - Separate SPI Bus Version ===");
+  
+  // Initialize buttons
   for (int i = 0; i < NUM_LANES; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
-  delay(2000);
 
-  // NOW initialize SD card (after TFT is done with SPI setup)
-  sdCardAvailable = initSDCard();
-
-  // Initialize display FIRST (it needs SPI)
+  // Initialize display FIRST (uses default VSPI)
+  Serial.println("Initializing TFT display on VSPI...");
   initDisplay();
   
+  // Initialize SD card on separate HSPI bus
+  Serial.println("Initializing SD card on HSPI...");
+  sdCardAvailable = initSDCard();
+  
   // Initialize WiFi
+  Serial.println("Initializing WiFi...");
   initWiFi();
   
   // Disable WiFi sleep for better stability during uploads
@@ -1395,6 +1346,8 @@ void setup() {
   drawMainScreen();
   startTime = millis();
   lastUpdate = millis();
+  
+  Serial.println("=== Setup Complete ===\n");
 }
 
 ///////////////////// Main Loop /////////////////////

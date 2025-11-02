@@ -367,6 +367,19 @@ function init() {
     } else {
         console.log("No Arduino IP set. Please set it from the dashboard or function page.");
     }
+
+    const queryString = window.location.search;
+
+    // Create a URLSearchParams object
+    const params = new URLSearchParams(queryString);
+
+    // Get the value of the "completed" parameter
+    const completed = params.get('completed');
+
+    if (completed === 'true') {
+        fetchGameResult();
+    }
+
 }
 
 
