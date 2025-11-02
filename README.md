@@ -8,7 +8,18 @@
 ## Links
 - [Webpage Synchro game](https://ganksterphy.github.io/Synchro/)
 - [Video present Synchro game](https://youtube.com)
-- [Poster Synchro game](https://youtube.com)
+
+---
+
+## รูปภาพชิ้นงาน
+
+![Synchro Controller](/synchrobox.jpg)
+
+---
+
+## Poster
+
+![Synchro poster](/SynchronPoster.png)
 
 ---
 
@@ -127,14 +138,6 @@
 4. กดปุ่มให้ตรงกับจังหวะ/สีที่ตกลงมาจากด้านบน  
 5. เมื่อจบเพลง ระบบสรุปผลการเล่นบนเว็บ  
 6. สามารถเลือกเล่นเพลงใหม่และดู History การเล่นได้
-
----
-
-## รูปภาพชิ้นงาน
-
-![Synchro Controller](/SynchroController/Teacher.png)
-
----
 
 ## Contributors
 
