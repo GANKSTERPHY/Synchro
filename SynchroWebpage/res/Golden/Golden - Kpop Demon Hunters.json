@@ -1,0 +1,601 @@
+{
+  "songName": "Golden",
+  "artist": "Kpop Demon Hunters",
+  "length": 160,
+  "tiles": [
+    {
+      "type": "tap",
+      "press": 0,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 400,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 600,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 800,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 1000,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 1200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 1400,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 1600,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 1800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 2000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 2200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 2400,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 2600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 2800,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 3000,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 3200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 3400,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 3600,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 3800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 4000,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 4200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 4400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 4600,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 4800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 5000,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 5200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 5400,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 5600,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 5800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 6000,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 6200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 6600,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 6800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 7000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 7200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 7400,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 7600,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 7800,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 8000,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 8200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 8400,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 8600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 8800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 9000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 9200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 9400,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 9600,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 9800,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 10000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 10200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 10400,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 10600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 10800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 11000,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 11200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 11400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 11600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 11800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 12000,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 12200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 12400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 12600,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 12800,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 13000,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 13200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 13400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 13600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 13800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 14000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 14200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 14400,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 14600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 14800,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 15000,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 15200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 15400,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 15600,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 15800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 16000,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 16200,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 16400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 16600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 16800,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 17000,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 17200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 17400,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 17600,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 17800,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 18000,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 18200,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 18400,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 18600,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 18800,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 19000,
+      "slot": 2,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 19200,
+      "slot": 1,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 19400,
+      "slot": 3,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 19600,
+      "slot": 4,
+      "release": null
+    },
+    {
+      "type": "tap",
+      "press": 19800,
+      "slot": 2,
+      "release": null
+    }
+  ]
+}
